@@ -1,2 +1,0 @@
-# NEACourseworkCS
-REPO FOR COURSEWORK
