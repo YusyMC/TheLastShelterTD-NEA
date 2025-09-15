@@ -1,10 +1,11 @@
 import pygame
-import sys
+#import sys
 
 pygame.init()
-screen = pygame.display.set_mode((500, 500))
-pygame.display.set_caption("Test Button.py")
-main_font = pygame.font.SysFont("cambria", 50)
+#screen = pygame.display.set_mode((500, 500)) Will be used as a parameter in the code so it can be implemented in main.py
+mainFont = pygame.font.SysFont("cambria", 50)
+
+
 
 class Button:
     def __init__(self, image, xPos, yPos, textInput):
@@ -13,10 +14,10 @@ class Button:
         self.yPos = yPos
         self.rect = self.image.get_rect(center=(self.xPos, self.yPos))
         self.textInput = textInput
-        self.text = main_font.render(self.textInput, True, "white")
+        self.text = mainFont.render(self.textInput, True, "white")
         self.textRect = self.text.get_rect(center=(self.xPos, self.yPos))
 
-    def update(self):
+    def update(self, screen):
         screen.blit(self.image, self.rect)
         screen.blit(self.text, self.textRect)
 
@@ -26,15 +27,19 @@ class Button:
 
     def changeColor(self, position):
         if self.rect.collidepoint(position):
-            self.text = main_font.render(self.textInput, True, "green")
+            self.text = mainFont.render(self.textInput, True, "green")
         else:
-            self.text = main_font.render(self.textInput, True, "white")
+            self.text = mainFont.render(self.textInput, True, "white")
 
+
+
+# Testing
+""" 
 # Load and scale button image
 buttonSurface = pygame.image.load("Button test.png")
 buttonScale = pygame.transform.scale(buttonSurface, (400, 150))
 
-# Use the scaled image here
+# Use the scaled image 
 button = Button(buttonScale, 250, 250, "Click")
 
 while True:
@@ -49,3 +54,4 @@ while True:
     button.changeColor(pygame.mouse.get_pos())
     button.update()
     pygame.display.update()
+"""

@@ -1,7 +1,9 @@
 import pygame
+import sys
+from button import Button
 
 
-# Initialises Pygame
+# Initialise's Pygame
 pygame.init()
 
 clock = pygame.time.Clock()
@@ -9,6 +11,14 @@ clock = pygame.time.Clock()
 # game window
 screen = pygame.display.set_mode((500, 500))
 pygame.display.set_caption("The last Shelter TD")
+
+
+# Button Config
+buttonSurface = pygame.image.load("Button test.png")
+buttonScale = pygame.transform.scale(buttonSurface, (400, 150))
+
+button = Button(buttonScale, 250, 250, "Click")
+
 
 # game
 while True:
@@ -20,6 +30,14 @@ while True:
 
         # quit
         if event.type == pygame.QUIT:
-            run = False
+            pygame.quit()
+            sys.exit()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            print("Button Registered")
+    
+    screen.fill("white")
+    button.changeColor(pygame.mouse.get_pos())
+    button.update(screen)
+    pygame.display.update()
 
 pygame.quit()
