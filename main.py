@@ -40,4 +40,11 @@ while True:
     button.update(screen)
     pygame.display.update()
 
+
+# https://github.com/baraltech/Menu-System-PyGame/blob/main/main.py
+
+def mainMenu(): # main menu screen
+
+    return None
+
 pygame.quit()
