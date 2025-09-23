@@ -14,7 +14,7 @@ pygame.display.set_caption("The last Shelter TD")
 
 
 # Button Config
-buttonSurface = pygame.image.load("Button test.png")
+buttonSurface = pygame.image.load("assets/button.png")
 buttonScale = pygame.transform.scale(buttonSurface, (400, 150))
 
 button = Button(buttonScale, 250, 250, "Click")
