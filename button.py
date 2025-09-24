@@ -3,19 +3,21 @@ import pygame
 
 pygame.init()
 #screen = pygame.display.set_mode((500, 500)) Will be used as a parameter in the code so it can be implemented in main.py
-mainFont = pygame.font.SysFont("cambria", 50)
-
 
 
 class Button:
-    def __init__(self, image, xPos, yPos, textInput):
+    def __init__(self, image, xPos, yPos, textInput, font, baseColor, hoverColor):
         self.image = image
         self.xPos = xPos
         self.yPos = yPos
-        self.rect = self.image.get_rect(center=(self.xPos, self.yPos))
+        self.font = font
         self.textInput = textInput
-        self.text = mainFont.render(self.textInput, True, "white")
+        self.baseColor, self.hoverColor = baseColor, hoverColor
+        self.rect = self.image.get_rect(center=(self.xPos, self.yPos))
+        self.text = font.render(self.textInput, True, self.baseColor)
         self.textRect = self.text.get_rect(center=(self.xPos, self.yPos))
+        if self.image is None:
+            self.image = self.text
 
     def update(self, screen):
         screen.blit(self.image, self.rect)
@@ -23,13 +25,14 @@ class Button:
 
     def checkForInput(self, position):
         if self.rect.collidepoint(position):
-            print("Button Registered.")
+            return True
+        return False
 
     def changeColor(self, position):
         if self.rect.collidepoint(position):
-            self.text = mainFont.render(self.textInput, True, "green")
+            self.text = self.font.render(self.textInput, True, "green")
         else:
-            self.text = mainFont.render(self.textInput, True, "white")
+            self.text = self.font.render(self.textInput, True, "white")
 
 
 

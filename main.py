@@ -7,8 +7,6 @@ from PIL import Image, ImageFilter
 # Initialise's Pygame
 pygame.init()
 
-clock = pygame.time.Clock()
-
 # menu background
 imgBG = Image.open("assets/placeholderBG.jpg")
 blurredBG = imgBG.filter(ImageFilter.GaussianBlur(radius=5))
@@ -56,8 +54,7 @@ while True:
 # https://github.com/baraltech/Menu-System-PyGame/blob/main/main.py
 
 def getFont(size):
-    return pygame.font.Font("assets/fonts/gameFont.otf")
-
+    return pygame.font.Font("assets/fonts/gameFont.otf", size)
 
 
 def mainMenu(): # main menu screen
@@ -65,8 +62,30 @@ def mainMenu(): # main menu screen
         screen.blit(menuBG, (0, 0))
 
         menuMousePos = pygame.mouse.get_pos()
-        menuText = get_font(100).render("Main Menu", True, "#ffffff")
+        menuText = getFont(100).render("Main Menu", True, "#ffffff")
         menuRect = menuText.get_rect(center=(640, 100))
 
+        playBUTTON = Button(image=pygame.image.load("assets/buttonTest.png"), xPos=640, yPos=250, textInput="PLAY", font=getFont(75), baseColor="#ffffff", hoverColor="green")
+        optionsBUTTON = Button(image=pygame.image.load("assets/buttonTest.png"), xPos=640, yPos=400, textInput="OPTIONS", font=getFont(75), baseColor="#ffffff", hoverColor="green")
+        quitBUTTON = Button(image=pygame.image.load("assets/buttonTest.png"), xPos=640, yPos=550, textInput="EXIT", font=getFont(75), baseColor="#ffffff", hoverColor="green")
 
-pygame.quit()
+        screen.blit(menuText, menuRect)
+
+        for button in [playBUTTON, optionsBUTTON, quitBUTTON]:
+            button.changeColor(menuMousePos)
+            button.update(screen)
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if playBUTTON.checkForInput(menuMousePos):
+                    return 0 #placeholder TODO: play functions
+                if optionsBUTTON.checkForInput(menuMousePos):
+                    return 0 #placeholder TODO: option function
+                if quitBUTTON.checkForInput(menuMousePos):
+                    pygame.quit()
+                    sys.exit()
+        pygame.display.update()
+mainMenu()
