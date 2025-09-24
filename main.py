@@ -24,8 +24,9 @@ screen = pygame.display.set_mode((1280, 720))
 pygame.display.set_caption("The last Shelter TD")
 menuBG = pygame.transform.scale(menuBG, (1280,720)) # sets menu background to 1280x720 to fit screen
 
-# Button Config
-buttonSurface = pygame.image.load("assets/button.png")
+""" #ALL TEST FOR BUTTON
+# Button test Config
+buttonSurface = pygame.image.load("assets/buttonTest.png")
 buttonScale = pygame.transform.scale(buttonSurface, (400, 150))
 
 button = Button(buttonScale, 250, 250, "Click")
@@ -50,12 +51,22 @@ while True:
     button.changeColor(pygame.mouse.get_pos())
     button.update(screen)
     pygame.display.update()
-
+"""
 
 # https://github.com/baraltech/Menu-System-PyGame/blob/main/main.py
 
+def getFont(size):
+    return pygame.font.Font("assets/fonts/gameFont.otf")
+
+
+
 def mainMenu(): # main menu screen
     while True:
-        screen.blit(menuBG)
+        screen.blit(menuBG, (0, 0))
+
+        menuMousePos = pygame.mouse.get_pos()
+        menuText = get_font(100).render("Main Menu", True, "#ffffff")
+        menuRect = menuText.get_rect(center=(640, 100))
+
 
 pygame.quit()
