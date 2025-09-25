@@ -1,26 +1,15 @@
 import pygame
 import sys
 from button import Button
-from PIL import Image, ImageFilter
+import assets
 
 
 # Initialise's Pygame
 pygame.init()
 
-# menu background
-imgBG = Image.open("assets/placeholderBG.jpg")
-blurredBG = imgBG.filter(ImageFilter.GaussianBlur(radius=5))
-
-mode = blurredBG.mode
-size = blurredBG.size
-data = blurredBG.tobytes()
-
-menuBG = pygame.image.fromstring(data, size, mode)
-
 # game window
 screen = pygame.display.set_mode((1280, 720))
 pygame.display.set_caption("The last Shelter TD")
-menuBG = pygame.transform.scale(menuBG, (1280,720)) # sets menu background to 1280x720 to fit screen
 
 """ #ALL TEST FOR BUTTON
 # Button test Config
@@ -59,7 +48,7 @@ def getFont(size):
 
 def mainMenu(): # main menu screen
     while True:
-        screen.blit(menuBG, (0, 0))
+        screen.blit(assets.menuBG, (0, 0))
 
         menuMousePos = pygame.mouse.get_pos()
         menuText = getFont(100).render("Main Menu", True, "#ffffff")
