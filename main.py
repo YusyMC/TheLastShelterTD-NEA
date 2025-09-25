@@ -40,7 +40,6 @@ while True:
     pygame.display.update()
 """
 
-# https://github.com/baraltech/Menu-System-PyGame/blob/main/main.py
 
 def getFont(size):
     return pygame.font.Font("assets/fonts/gameFont.otf", size)
@@ -51,14 +50,16 @@ def mainMenu(): # main menu screen
         screen.blit(assets.menuBG, (0, 0))
 
         menuMousePos = pygame.mouse.get_pos()
-        menuText = getFont(100).render("Main Menu", True, "#ffffff")
-        menuRect = menuText.get_rect(center=(640, 100))
+        menuText = getFont(50).render("The Last", True, "#ff0000")
+        menuRect = menuText.get_rect(center=(150, 100))
+        buttonBackboardRect = assets.buttonBackboard.get_rect(center=(150, 360))
 
-        playBUTTON = Button(image=pygame.image.load("assets/buttonTest.png"), xPos=640, yPos=250, textInput="PLAY", font=getFont(75), baseColor="#ffffff", hoverColor="green")
-        optionsBUTTON = Button(image=pygame.image.load("assets/buttonTest.png"), xPos=640, yPos=400, textInput="OPTIONS", font=getFont(75), baseColor="#ffffff", hoverColor="green")
-        quitBUTTON = Button(image=pygame.image.load("assets/buttonTest.png"), xPos=640, yPos=550, textInput="EXIT", font=getFont(75), baseColor="#ffffff", hoverColor="green")
+        playBUTTON = Button(image=pygame.image.load("assets/buttonTest.png"), xPos=150, yPos=250, textInput="PLAY", font=getFont(50), baseColor="#ffffff", hoverColor="green")
+        optionsBUTTON = Button(image=pygame.image.load("assets/buttonTest.png"), xPos=150, yPos=400, textInput="OPTIONS", font=getFont(50), baseColor="#ffffff", hoverColor="green")
+        quitBUTTON = Button(image=pygame.image.load("assets/buttonTest.png"), xPos=150, yPos=550, textInput="EXIT", font=getFont(50), baseColor="#ffffff", hoverColor="green")
 
-        screen.blit(menuText, menuRect)
+        screen.blit(assets.buttonBackboard, buttonBackboardRect) # button backboard
+        screen.blit(menuText, menuRect) # menu text
 
         for button in [playBUTTON, optionsBUTTON, quitBUTTON]:
             button.changeColor(menuMousePos)
