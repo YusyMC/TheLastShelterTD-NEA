@@ -54,9 +54,30 @@ def mainMenu(): # main menu screen
         menuRect = menuText.get_rect(center=(150, 100))
         buttonBackboardRect = assets.buttonBackboard.get_rect(center=(150, 360))
 
-        playBUTTON = Button(image=pygame.image.load("assets/buttonTest.png"), xPos=150, yPos=250, textInput="PLAY", font=getFont(50), baseColor="#ffffff", hoverColor="green")
-        optionsBUTTON = Button(image=pygame.image.load("assets/buttonTest.png"), xPos=150, yPos=400, textInput="OPTIONS", font=getFont(50), baseColor="#ffffff", hoverColor="green")
-        quitBUTTON = Button(image=pygame.image.load("assets/buttonTest.png"), xPos=150, yPos=550, textInput="EXIT", font=getFont(50), baseColor="#ffffff", hoverColor="green")
+        playBUTTON = Button(
+            image=pygame.image.load("assets/buttonTest.png"),
+            xPos=150, yPos=250, 
+            textInput="PLAY", 
+            font=getFont(50),
+            baseColor="#ffffff",
+            hoverColor="green"
+            )
+        optionsBUTTON = Button(
+            image=pygame.image.load("assets/buttonTest.png"),
+            xPos=150, yPos=400,
+            textInput="OPTIONS",
+            font=getFont(50),
+            baseColor="#ffffff",
+            hoverColor="green"
+            )
+        quitBUTTON = Button(
+            image=pygame.image.load("assets/buttonTest.png"),
+            xPos=150, yPos=550,
+            textInput="EXIT",
+            font=getFont(50),
+            baseColor="#ffffff",
+            hoverColor="green"
+            )
 
         screen.blit(assets.buttonBackboard, buttonBackboardRect) # button backboard
         screen.blit(menuText, menuRect) # menu text
