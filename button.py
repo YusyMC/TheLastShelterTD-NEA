@@ -30,7 +30,7 @@ class Button:
 
     def changeColor(self, position):
         if self.rect.collidepoint(position):
-            self.text = self.font.render(self.textInput, True, "green")
+            self.text = self.font.render(self.textInput, True, "#287D20")
         else:
             self.text = self.font.render(self.textInput, True, "white")
 
