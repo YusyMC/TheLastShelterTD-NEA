@@ -50,37 +50,42 @@ def mainMenu(): # main menu screen
         screen.blit(assets.menuBG, (0, 0))
 
         menuMousePos = pygame.mouse.get_pos()
-        menuText = getFont(50).render("The Last", True, "#ff0000")
-        menuRect = menuText.get_rect(center=(150, 100))
+        menuText = getFont(40).render("THE LAST SHELTER", True, "#ffffff")
+        menuRect = menuText.get_rect(center=(150, 140))
+        TDText = getFont(20).render("TOWER DEFENCE", True, "#287D20")
+        TDRect = menuText.get_rect(center=(220,175))
         buttonBackboardRect = assets.buttonBackboard.get_rect(center=(150, 360))
+        logoRect = assets.logo.get_rect(center=(150,80))
 
         playBUTTON = Button(
-            image=pygame.image.load("assets/buttonTest.png"),
+            image=pygame.image.load("assets/mainMenuButton.png"),
             xPos=150, yPos=250, 
             textInput="PLAY", 
             font=getFont(50),
             baseColor="#ffffff",
-            hoverColor="green"
+            hoverColor="red"
             )
         optionsBUTTON = Button(
-            image=pygame.image.load("assets/buttonTest.png"),
+            image=pygame.image.load("assets/mainMenuButton.png"),
             xPos=150, yPos=400,
-            textInput="OPTIONS",
+            textInput="SETTINGS",
             font=getFont(50),
             baseColor="#ffffff",
             hoverColor="green"
             )
         quitBUTTON = Button(
-            image=pygame.image.load("assets/buttonTest.png"),
+            image=pygame.image.load("assets/mainMenuButton.png"),
             xPos=150, yPos=550,
             textInput="EXIT",
             font=getFont(50),
             baseColor="#ffffff",
-            hoverColor="green"
+            hoverColor="#287D20"
             )
 
         screen.blit(assets.buttonBackboard, buttonBackboardRect) # button backboard
+        screen.blit(assets.logo, logoRect) # logo
         screen.blit(menuText, menuRect) # menu text
+        screen.blit(TDText, TDRect)
 
         for button in [playBUTTON, optionsBUTTON, quitBUTTON]:
             button.changeColor(menuMousePos)
