@@ -85,7 +85,7 @@ def mainMenu(): # main menu screen
         screen.blit(assets.buttonBackboard, buttonBackboardRect) # button backboard
         screen.blit(assets.logo, logoRect) # logo
         screen.blit(menuText, menuRect) # menu text
-        screen.blit(TDText, TDRect)
+        screen.blit(TDText, TDRect) # Tower defence text
 
         for button in [playBUTTON, optionsBUTTON, quitBUTTON]:
             button.changeColor(menuMousePos)
