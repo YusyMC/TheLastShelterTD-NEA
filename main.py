@@ -2,6 +2,7 @@ import pygame
 import sys
 from button import Button
 import assets
+from assets import loadImage
 
 
 # Initialise's Pygame
@@ -63,7 +64,7 @@ def mainMenu(): # main menu screen
             textInput="PLAY", 
             font=getFont(50),
             baseColor="#ffffff",
-            hoverColor="red"
+            hoverColor="#429724"
             )
         optionsBUTTON = Button(
             image=pygame.image.load("assets/mainMenuButton.png"),
@@ -71,7 +72,7 @@ def mainMenu(): # main menu screen
             textInput="SETTINGS",
             font=getFont(50),
             baseColor="#ffffff",
-            hoverColor="green"
+            hoverColor="#429724"
             )
         quitBUTTON = Button(
             image=pygame.image.load("assets/mainMenuButton.png"),
@@ -79,7 +80,7 @@ def mainMenu(): # main menu screen
             textInput="EXIT",
             font=getFont(50),
             baseColor="#ffffff",
-            hoverColor="#287D20"
+            hoverColor="#429724"
             )
 
         screen.blit(assets.buttonBackboard, buttonBackboardRect) # button backboard

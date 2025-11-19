@@ -28,11 +28,13 @@ class Button:
             return True
         return False
 
-    def changeColor(self, position):
+    def changeColor(self, position, hoverColor=None, baseColor=None):
+        hColor = hoverColor if hoverColor is not None else self.hoverColor
+        bColor = baseColor if baseColor is not None else self.baseColor
         if self.rect.collidepoint(position):
-            self.text = self.font.render(self.textInput, True, "#287D20")
+            self.text = self.font.render(self.textInput, True, pygame.Color(hColor))
         else:
-            self.text = self.font.render(self.textInput, True, "white")
+            self.text = self.font.render(self.textInput, True, pygame.Color(bColor))
 
 
 
