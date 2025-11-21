@@ -59,7 +59,7 @@ def mainMenu(): # main menu screen
         logoRect = assets.logo.get_rect(center=(150,80))
 
         playBUTTON = Button(
-            image=pygame.image.load("assets/mainMenuButton.png"),
+            image=pygame.image.load("assets/menu/mainMenuButton.png"),
             xPos=150, yPos=250, 
             textInput="PLAY", 
             font=getFont(50),
@@ -67,7 +67,7 @@ def mainMenu(): # main menu screen
             hoverColor="#429724"
             )
         optionsBUTTON = Button(
-            image=pygame.image.load("assets/mainMenuButton.png"),
+            image=pygame.image.load("assets/menu/mainMenuButton.png"),
             xPos=150, yPos=400,
             textInput="SETTINGS",
             font=getFont(50),
@@ -75,7 +75,7 @@ def mainMenu(): # main menu screen
             hoverColor="#429724"
             )
         quitBUTTON = Button(
-            image=pygame.image.load("assets/mainMenuButton.png"),
+            image=pygame.image.load("assets/menu/mainMenuButton.png"),
             xPos=150, yPos=550,
             textInput="EXIT",
             font=getFont(50),
