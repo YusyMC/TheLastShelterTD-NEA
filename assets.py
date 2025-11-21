@@ -9,10 +9,10 @@ pygame.init()
 imgBG = Image.open("assets/map.png").convert("RGBA")
 
 
-#blurredBG = imgBG.filter(ImageFilter.GaussianBlur(radius=5)) # Makes it blurry
-mode = imgBG.mode
-size = imgBG.size
-data = imgBG.tobytes()
+blurredBG = imgBG.filter(ImageFilter.GaussianBlur(radius=10)) # Makes it blurry
+mode = blurredBG.mode
+size = blurredBG.size
+data = blurredBG.tobytes()
 menuBG = pygame.image.fromstring(data, size, mode)
 
 menuBG = pygame.transform.scale(menuBG, (1280,720)) # sets menu background to 1280x720 to fit screen
