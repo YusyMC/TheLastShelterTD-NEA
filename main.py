@@ -1,108 +1,103 @@
 import pygame
 import sys
-from button import Button
-import assets
+from button import Button # Imports Button class from button.py
+import assets # Imports assets.py
 from assets import loadImage
 
 
 # Initialise's Pygame
 pygame.init()
 
-# game window
+# Game window
 screen = pygame.display.set_mode((1280, 720))
 pygame.display.set_caption("The last Shelter TD")
 
-""" #ALL TEST FOR BUTTON
-# Button test Config
-buttonSurface = pygame.image.load("assets/buttonTest.png")
-buttonScale = pygame.transform.scale(buttonSurface, (400, 150))
-
-button = Button(buttonScale, 250, 250, "Click")
-
-
-# game
-while True:
-    
-    clock.tick(60) # FPS
-
-    # event handler
-    for event in pygame.event.get():
-
-        # quit
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            print("Button Registered")
-    
-    screen.blit(menuBG,(0,0))
-    button.changeColor(pygame.mouse.get_pos())
-    button.update(screen)
-    pygame.display.update()
-"""
-
-
+# Function to get the custom game font at different sizes
 def getFont(size):
     return pygame.font.Font("assets/fonts/gameFont.otf", size)
 
-
-def mainMenu(): # main menu screen
+# main menu screen function
+def mainMenu():
+    # Infinite loop to keep the main menu running
     while True:
+        # Gets the loaded background from assets.py and loads it
         screen.blit(assets.menuBG, (0, 0))
 
+        # Gets mouse position
         menuMousePos = pygame.mouse.get_pos()
-        menuText = getFont(40).render("THE LAST SHELTER", True, "#ffffff")
-        menuRect = menuText.get_rect(center=(150, 140))
+        # Renders main title text
+        menuText = getFont(40).render("THE LAST SHELTER", True, "#ffffff") 
+        # Create rectangle to position text
+        menuRect = menuText.get_rect(center=(150, 140)) 
+        # Renders Subtitle text
         TDText = getFont(20).render("TOWER DEFENCE", True, "#287D20")
+        # Create rectangle to position text
         TDRect = menuText.get_rect(center=(220,175))
+        # Gets the rectangle for the button backboard image
         buttonBackboardRect = assets.buttonBackboard.get_rect(center=(150, 360))
+        # Gets the rectangle for the game logo
         logoRect = assets.logo.get_rect(center=(150,80))
 
+        # Creates Play Button
         playBUTTON = Button(
-            image=pygame.image.load("assets/menu/mainMenuButton.png"),
-            xPos=150, yPos=250, 
-            textInput="PLAY", 
-            font=getFont(50),
-            baseColor="#ffffff",
-            hoverColor="#429724"
+            image=pygame.image.load("assets/menu/mainMenuButton.png"), # Loads button image
+            xPos=150, yPos=250, # Position on the screen
+            textInput="PLAY", # Text on the button
+            font=getFont(50), # Font used for the button text
+            baseColour="#ffffff", 
+            hoverColour="#429724" # Colour of the button text when hovered with cursor
             )
+        # Creates Options Button
         optionsBUTTON = Button(
             image=pygame.image.load("assets/menu/mainMenuButton.png"),
             xPos=150, yPos=400,
             textInput="SETTINGS",
             font=getFont(50),
-            baseColor="#ffffff",
-            hoverColor="#429724"
+            baseColour="#ffffff",
+            hoverColour="#429724"
             )
+        # Creates Exit Button
         quitBUTTON = Button(
             image=pygame.image.load("assets/menu/mainMenuButton.png"),
             xPos=150, yPos=550,
             textInput="EXIT",
             font=getFont(50),
-            baseColor="#ffffff",
-            hoverColor="#429724"
+            baseColour="#ffffff",
+            hoverColour="#429724"
             )
+        # Draws the button backboard image onto the screen
+        screen.blit(assets.buttonBackboard, buttonBackboardRect)
+        # Draws the logo image onto the screen
+        screen.blit(assets.logo, logoRect)
+        # Draws the game title onto the screen
+        screen.blit(menuText, menuRect)
+        # Draws the subtitle text onto the screen
+        screen.blit(TDText, TDRect)
 
-        screen.blit(assets.buttonBackboard, buttonBackboardRect) # button backboard
-        screen.blit(assets.logo, logoRect) # logo
-        screen.blit(menuText, menuRect) # menu text
-        screen.blit(TDText, TDRect) # Tower defence text
-
+        # Loops through all buttons to update when hovered
         for button in [playBUTTON, optionsBUTTON, quitBUTTON]:
-            button.changeColor(menuMousePos)
+            button.changeColour(menuMousePos)
             button.update(screen)
         
+        # Loop for event handling
         for event in pygame.event.get():
+            # If window close button is pressed, exit program
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            # If the mouse is clicked
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if playBUTTON.checkForInput(menuMousePos):
                     return 0 #placeholder TODO: play functions
                 if optionsBUTTON.checkForInput(menuMousePos):
                     return 0 #placeholder TODO: option function
+                # If Exit button clicked, game closes
                 if quitBUTTON.checkForInput(menuMousePos):
                     pygame.quit()
                     sys.exit()
+        
+        # Makes sure display is always updated
         pygame.display.update()
+
+# mainMenu function called
 mainMenu()
