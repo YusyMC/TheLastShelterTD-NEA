@@ -28,20 +28,20 @@ def mainMenu():
         # Renders main title text
         menuText = getFont(40).render("THE LAST SHELTER", True, "#ffffff") 
         # Create rectangle to position text
-        menuRect = menuText.get_rect(center=(150, 140)) 
+        menuRect = menuText.get_rect(center=(200, 160)) 
         # Renders Subtitle text
         TDText = getFont(20).render("TOWER DEFENCE", True, "#287D20")
         # Create rectangle to position text
-        TDRect = menuText.get_rect(center=(220,175))
+        TDRect = menuText.get_rect(center=(270,195))
         # Gets the rectangle for the button backboard image
-        buttonBackboardRect = assets.buttonBackboard.get_rect(center=(150, 360))
+        buttonBackboardRect = assets.buttonBackboard.get_rect(center=(200, 360))
         # Gets the rectangle for the game logo
-        logoRect = assets.logo.get_rect(center=(150,80))
+        logoRect = assets.logo.get_rect(center=(200,100))
 
         # Creates Play Button
         playBUTTON = Button(
             image=pygame.image.load("assets/menu/mainMenuButton.png"), # Loads button image
-            xPos=150, yPos=250, # Position on the screen
+            xPos=200, yPos=300, # Position on the screen
             textInput="PLAY", # Text on the button
             font=getFont(50), # Font used for the button text
             baseColour="#ffffff", 
@@ -50,7 +50,7 @@ def mainMenu():
         # Creates Options Button
         optionsBUTTON = Button(
             image=pygame.image.load("assets/menu/mainMenuButton.png"),
-            xPos=150, yPos=400,
+            xPos=200, yPos=400,
             textInput="SETTINGS",
             font=getFont(50),
             baseColour="#ffffff",
@@ -59,7 +59,7 @@ def mainMenu():
         # Creates Exit Button
         quitBUTTON = Button(
             image=pygame.image.load("assets/menu/mainMenuButton.png"),
-            xPos=150, yPos=550,
+            xPos=200, yPos=500,
             textInput="EXIT",
             font=getFont(50),
             baseColour="#ffffff",
@@ -88,9 +88,9 @@ def mainMenu():
             # If the mouse is clicked
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if playBUTTON.checkForInput(menuMousePos):
-                    return 0 #placeholder TODO: play functions
+                    return print(0) #placeholder TODO: play functions
                 if optionsBUTTON.checkForInput(menuMousePos):
-                    return 0 #placeholder TODO: option function
+                    return print(0) #placeholder TODO: option function
                 # If Exit button clicked, game closes
                 if quitBUTTON.checkForInput(menuMousePos):
                     pygame.quit()

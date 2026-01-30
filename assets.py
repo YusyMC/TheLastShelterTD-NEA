@@ -21,6 +21,7 @@ menuBG = pygame.transform.scale(menuBG, (1280,720)) # sets menu background to 12
 # Button backboard
 
 buttonBackboard = pygame.image.load("assets/menu/menu_button_backboard.png")
+buttonBackboard = pygame.transform.scale(buttonBackboard, (300,660))
 
 # logo
 
