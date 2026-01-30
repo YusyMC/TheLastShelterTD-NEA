@@ -1,7 +1,7 @@
 import pygame
 import sys
 from button import Button # Imports Button class from button.py
-import assets # Imports assets.py
+import assets, game # Imports assets.py
 from assets import loadImage
 
 
@@ -10,7 +10,7 @@ pygame.init()
 
 # Game window
 screen = pygame.display.set_mode((1280, 720))
-pygame.display.set_caption("The last Shelter TD")
+pygame.display.set_caption("The Last Shelter TD")
 
 # Function to get the custom game font at different sizes
 def getFont(size):
@@ -88,7 +88,7 @@ def mainMenu():
             # If the mouse is clicked
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if playBUTTON.checkForInput(menuMousePos):
-                    return print(0) #placeholder TODO: play functions
+                    return game.gameLoop() #placeholder TODO: play functions
                 if optionsBUTTON.checkForInput(menuMousePos):
                     return print(0) #placeholder TODO: option function
                 # If Exit button clicked, game closes
