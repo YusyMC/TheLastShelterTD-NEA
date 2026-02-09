@@ -8,7 +8,7 @@ pygame.init()
 
 # Menu Background unblurs transition
 def menuUnblur():
-    imgBG = Image.open("assets/map.png").convert("RGBA")
+    imgBG = Image.open("levels/map.png").convert("RGBA")
 
     # Empty List to sotre each animation frame
     frames = []
@@ -82,7 +82,7 @@ def gameLoop():
         enemyGroup = pygame.sprite.Group()
 
         # creating enemy object
-        enemy = Enemy((200,300), walkingZombieAnimated)
+        enemy = Enemy((200,300), walkingZombieAnimated[3])
         # Addes enemy to the group
         enemyGroup.add(enemy)
 
