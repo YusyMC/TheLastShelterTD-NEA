@@ -6,7 +6,7 @@ pygame.init()
 # MAIN MENU
 
 # Menu background 
-imgBG = Image.open("assets/map.png").convert("RGBA")
+imgBG = Image.open("levels/map.png").convert("RGBA")
 
 
 blurredBG = imgBG.filter(ImageFilter.GaussianBlur(radius=10)) # Makes it blurry

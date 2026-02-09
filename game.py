@@ -81,8 +81,20 @@ def gameLoop():
         # creating sprite group to store enemy objects
         enemyGroup = pygame.sprite.Group()
 
+        # Waypoints
+        waypoints = [
+            (1280,440),
+            (920,440),
+            (920,200),
+            (520,200),
+            (520,600),
+            (280,600),
+            (280,360),
+            (40,360)
+        ]
+
         # creating enemy object
-        enemy = Enemy((200,300), walkingZombieAnimated[3])
+        enemy = Enemy(waypoints, walkingZombieAnimated[3])
         # Addes enemy to the group
         enemyGroup.add(enemy)
 
