@@ -83,14 +83,14 @@ def gameLoop():
 
         # Waypoints
         waypoints = [
-            (1280,440),
-            (920,440),
-            (920,200),
-            (520,200),
-            (520,600),
-            (280,600),
-            (280,360),
-            (40,360)
+            (1280,440), # Enemy Spawn Point
+            (920,440), # First turn point
+            (920,200), # Second turn point
+            (520,200), # Third turn point
+            (520,600), # Fourth turn point
+            (280,600), # Fifth turn point
+            (280,360), # Sixth turn point
+            (40,360) # Zombie end point
         ]
 
         # creating enemy object
@@ -98,12 +98,17 @@ def gameLoop():
         # Addes enemy to the group
         enemyGroup.add(enemy)
 
+    clock = pygame.time.Clock()
+
     while True:
-    # Displayes the fully unblurred image leaving in a state ready for gameplay
+
+        timeDiff = clock.tick(60) / 1000.0 # seconds since last frame
+
+        # Displayes the fully unblurred image leaving in a state ready for gameplay
         screen.blit(frames[-1], (0,0))
 
         # Update group for every sprite in it
-        enemyGroup.update()
+        enemyGroup.update(timeDiff)
 
         # Draws every enemy sprite from the group onto the creen
         enemyGroup.draw(screen)

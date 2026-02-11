@@ -15,7 +15,7 @@ class Enemy(pygame.sprite.Sprite): # Inheritance, all functionalities of sprite 
         # Stores index of the next waypoint to move towards
         self.targetWaypoint = 1
         # Speed changes for different variables
-        self.speed = 1
+        self.speed = 60
         # Stores image of the sprite
         self.image = image
         # Creates rectangle from sprite image
@@ -24,11 +24,11 @@ class Enemy(pygame.sprite.Sprite): # Inheritance, all functionalities of sprite 
         self.rect.center = self.pos
     
     # Updates movement
-    def update(self):
-        self.move()
+    def update(self, timeDiff):
+        self.move(timeDiff)
 
     # For enemy movement
-    def move(self):
+    def move(self, timeDiff):
         # Checks if waypoint is in range
         if self.targetWaypoint >= len(self.waypoints):
             # Checks if enemy has reached the end of the path
@@ -41,11 +41,13 @@ class Enemy(pygame.sprite.Sprite): # Inheritance, all functionalities of sprite 
 
         # Distance to target
         distance = self.movement.length()
+
+        step = self.speed * timeDiff # pixels in the frame
         
         # Checks if remaining distance greater than speed
-        if distance >= self.speed:
+        if distance >= step:
             # Normalises direction vector and multiplies by speed
-            self.pos += self.movement.normalize() * self.speed
+            self.pos += self.movement.normalize() * step
         else: # Runs when enemy is close to waypoint
             if distance > 0:
                 # Moves enemy exactly onto the waypoint
@@ -53,7 +55,7 @@ class Enemy(pygame.sprite.Sprite): # Inheritance, all functionalities of sprite 
             # Goes to next waypoint
             self.targetWaypoint += 1
         # Updates rectangle position to vector position
-        self.rect.center = self.pos
+        self.rect.center = (round(self.pos.x), round(self.pos.y))
     
     def takeDamage(self):
         return 0 # TODO
