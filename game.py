@@ -26,24 +26,38 @@ def menuUnblur():
     return frames
 
 # Reusable function that extracts animation frames
-def animatedMovement(spritesheet, frameWidth, frameHeight):
+def animatedMovement(spritesheet, frameWidth, frameHeight, directions=None):
     # Array to store each animation step in order
-    frames = []
+    
+    # Order by row of direction on spritesheet
+    if directions is None:
+        directions = ["up", "right", "down", "left"]
     
     # Gets total size of the sprite sheet
     sheetWidth = spritesheet.get_width()
     sheetHeight = spritesheet.get_height()
 
+    # frames per row
+    framesPerRow = sheetWidth // frameWidth
+
+    # Dictionaru to store the frames
+    animations = {}
     # Moves down the sprite sheet one row at a time
-    for y in range(0, sheetHeight, frameHeight):
+    for rowX, y in enumerate(range(0, sheetHeight, frameHeight)):
+        frames = []
         # Moves across the sprite sheet fram by frame
         for x in range(0, sheetWidth, frameWidth):
             # Crops a single frame from the sprite sheet
             frame = spritesheet.subsurface((x, y, frameWidth, frameHeight))
             # Stores the fram in the array in the correct order
             frames.append(frame)
-    # Returns frame to be used anywhere
-    return frames
+        
+        # Assigns frames to directpm
+        if rowX < len(directions):
+            animations[directions[rowX]] = frames
+    
+    return animations
+        
 
 # Main game loop function
 def gameLoop():
@@ -94,7 +108,7 @@ def gameLoop():
         ]
 
         # creating enemy object
-        enemy = Enemy(waypoints, walkingZombieAnimated[3])
+        enemy = Enemy(waypoints, walkingZombieAnimated)
         # Addes enemy to the group
         enemyGroup.add(enemy)
 

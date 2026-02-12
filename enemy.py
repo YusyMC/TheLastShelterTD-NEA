@@ -5,7 +5,7 @@ from pygame.math import Vector2
 class Enemy(pygame.sprite.Sprite): # Inheritance, all functionalities of sprite class 
 
     # Constructor Method
-    def __init__(self, waypoints, image):
+    def __init__(self, waypoints, animations):
         # Integrates enemy object with pygame's sprite system
         pygame.sprite.Sprite.__init__(self)
         # storing waypoints list
@@ -16,16 +16,39 @@ class Enemy(pygame.sprite.Sprite): # Inheritance, all functionalities of sprite 
         self.targetWaypoint = 1
         # Speed changes for different variables
         self.speed = 60
-        # Stores image of the sprite
-        self.image = image
+        # Stores animation dictionary
+        self.animations = animations
+        # Sets starting direction
+        self.direction = "left"
+        # Tracks which frame is currently being displayed
+        self.frameIndex = 0
+        # Stores how much time has passed since last frame change
+        self.animTimer = 0
+        # Controls the animation speed
+        self.animDelay = 0.1
+        # Sets the starting sprite image
+        self.image = self.animations[self.direction][0]
         # Creates rectangle from sprite image
-        self.rect = self.image.get_rect()
-        # Sets enemy position
-        self.rect.center = self.pos
+        self.rect = self.image.get_rect(center=self.pos)
     
-    # Updates movement
+    # Updates movement and animation
     def update(self, timeDiff):
         self.move(timeDiff)
+        self.animate(timeDiff)
+    
+    # Method for animation logic
+    def animate(self, timeDiff):
+        # time since last frame
+        self.animTimer += timeDiff
+        # Checks if enough time has passed to change the frame
+        if self.animTimer >= self.animDelay:
+            self.animTimer = 0 # Timer Reset
+            # Selects correct animation list based on the direction of movement
+            frames = self.animations[self.direction]
+            # Cycles to next frame
+            self.frameIndex = (self.frameIndex + 1) % len(frames)
+            # Updates the sprite image to a new frame
+            self.image = frames[self.frameIndex]
 
     # For enemy movement
     def move(self, timeDiff):
@@ -43,6 +66,19 @@ class Enemy(pygame.sprite.Sprite): # Inheritance, all functionalities of sprite 
         distance = self.movement.length()
 
         step = self.speed * timeDiff # pixels in the frame
+
+        # Prevents errors when normalising 0 valued vectors
+        if distance > 0:
+            # Horizontal and vertical movement
+            x = self.movement.x
+            y = self.movement.y
+            # Checks which direction is stronger
+            if abs(x) > abs(y):
+                # If horizontal
+                self.direction = "right" if x > 0 else "left"
+            else:
+                # If vertical
+                self.direction = "down" if y > 0 else "up"
         
         # Checks if remaining distance greater than speed
         if distance >= step:
