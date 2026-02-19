@@ -3,6 +3,7 @@ import assets, enemy
 import sys
 from PIL import Image, ImageFilter
 from enemy import Enemy
+from turret import Turret
 
 pygame.init()
 
@@ -24,6 +25,12 @@ def menuUnblur():
         frames.append(menuBG)
 
     return frames
+
+def createTurret(turretIMG):
+    mousePos = pygame.mouse.get_pos()
+    framesTurret = turretIMG["up"]
+    basicTurret = Turret(framesTurret[0], mousePos)
+    assets.turretGroup.add(basicTurret)   
 
 # Reusable function that extracts animation frames
 def animatedMovement(spritesheet, frameWidth, frameHeight, directions=None):
@@ -92,8 +99,12 @@ def gameLoop():
             frameHeight=64
         )
 
-        # creating sprite group to store enemy objects
-        enemyGroup = pygame.sprite.Group()
+        basicTurretFrame = animatedMovement(
+            spritesheet=assets.basicTurret,
+            frameWidth=80,
+            frameHeight=80
+        )
+
 
         # Waypoints
         waypoints = [
@@ -110,7 +121,7 @@ def gameLoop():
         # creating enemy object
         enemy = Enemy(waypoints, walkingZombieAnimated)
         # Addes enemy to the group
-        enemyGroup.add(enemy)
+        assets.enemyGroup.add(enemy)
 
     clock = pygame.time.Clock()
 
@@ -122,15 +133,20 @@ def gameLoop():
         screen.blit(frames[-1], (0,0))
 
         # Update group for every sprite in it
-        enemyGroup.update(timeDiff)
+        assets.enemyGroup.update(timeDiff)
 
         # Draws every enemy sprite from the group onto the creen
-        enemyGroup.draw(screen)
+        assets.enemyGroup.draw(screen)
+        assets.turretGroup.draw(screen)
 
+        # Event Handler
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            # Mouse Click
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                createTurret(basicTurretFrame)
         
         #update display
         pygame.display.flip()
