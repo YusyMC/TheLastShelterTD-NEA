@@ -26,10 +26,18 @@ def menuUnblur():
 
     return frames
 
+# Creates turret on mouse
 def createTurret(turretIMG):
+    # Gets mouse position
     mousePos = pygame.mouse.get_pos()
+    # Converts pixel position into grid tile position
+    mouseTileX = mousePos[0] // 80
+    mouseTileY = mousePos[1] // 80
+    # Selects up direction animation frame
     framesTurret = turretIMG["up"]
-    basicTurret = Turret(framesTurret[0], mousePos)
+    # Creates animation frame using Turret class
+    basicTurret = Turret(framesTurret[0], mouseTileX, mouseTileY)
+    # Adds turret to group
     assets.turretGroup.add(basicTurret)   
 
 # Reusable function that extracts animation frames
@@ -144,7 +152,7 @@ def gameLoop():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            # Mouse Click
+            # Checks if Left Mouse Click 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 createTurret(basicTurretFrame)
         
