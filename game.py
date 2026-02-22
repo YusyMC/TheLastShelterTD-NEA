@@ -60,12 +60,18 @@ def createTurret(turretIMG):
     if tileID != 197:
         return
     
+    # Checks if space is occupied with another turret
+    for t in assets.turretGroup:
+        if getattr(t, "tileX", None) == mouseTileX and getattr(t, "tileY", None) == mouseTileY:
+            return
+    
     # Selects up direction animation frame
     framesTurret = turretIMG["up"]
     # Creates animation frame using Turret class
     basicTurret = Turret(framesTurret[0], mouseTileX, mouseTileY)
     # Adds turret to group
-    assets.turretGroup.add(basicTurret)   
+    assets.turretGroup.add(basicTurret)
+    print(assets.turretGroup) #debugging
 
 # Reusable function that extracts animation frames
 def animatedMovement(spritesheet, frameWidth, frameHeight, directions=None):
