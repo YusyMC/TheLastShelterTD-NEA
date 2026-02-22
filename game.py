@@ -1,11 +1,15 @@
 import pygame
 import assets, enemy
-import sys
+import sys, json
 from PIL import Image, ImageFilter
 from enemy import Enemy
 from turret import Turret
 
 pygame.init()
+
+# Loading map.tmj into code
+with open("levels/map.tmj") as file:
+    mapData = json.load(file)
 
 # Menu Background unblurs transition
 def menuUnblur():
@@ -33,6 +37,29 @@ def createTurret(turretIMG):
     # Converts pixel position into grid tile position
     mouseTileX = mousePos[0] // 80
     mouseTileY = mousePos[1] // 80
+
+    # Prevents placing turrets outside the map
+    mapWidth = mapData.get("width", 0)
+    mapHeight = mapData.get("height", 0)
+    # Checks if X is inside map and Y is inside the map
+    if not (0 <= mouseTileX < mapWidth and 0 <= mouseTileY < mapHeight):
+        return
+    
+    # Read Tile Layer 1 and dont place if its 197 (non path tiles)
+    try:
+        # Accesses tile data from tmj
+        layerData = mapData["layers"][0]["data"]
+        tileIndex = mouseTileY * mapWidth + mouseTileX
+        # Grabs tile ID
+        tileID = layerData[tileIndex]
+    # If something goes wrong, it stops the function.
+    except Exception:
+        return
+    
+    # Prevents placement on path
+    if tileID != 197:
+        return
+    
     # Selects up direction animation frame
     framesTurret = turretIMG["up"]
     # Creates animation frame using Turret class
