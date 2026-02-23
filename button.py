@@ -7,9 +7,13 @@ pygame.init()
 
 class Button:
     # Constructor method that runs when Button class is called
-    def __init__(self, image, xPos, yPos, textInput, font, baseColour, hoverColour): 
+    def __init__(self, image, xPos, yPos, textInput=None, font=None, baseColour=None, hoverColour=None, clickedImage=None): 
         # Stores button image
         self.image = image
+        # Stores alternative image when button is clicked
+        self.clickedImage = clickedImage
+        # Tracks if button is currently clicked
+        self.isClicked = False
         # Stores x position of button's centre
         self.xPos = xPos 
         # Stores y position of button's centre
@@ -22,17 +26,29 @@ class Button:
         self.baseColour, self.hoverColour = baseColour, hoverColour 
         # Creates rectangle for button image and centres it at xPos and yPos
         self.rect = self.image.get_rect(center=(self.xPos, self.yPos))
-        # Renders button using the base colour
-        self.text = font.render(self.textInput, True, self.baseColour)
-        # Creates a rectangle for the text and centres it on the button
-        self.textRect = self.text.get_rect(center=(self.xPos, self.yPos))
+        # Only renders text if both textInput and font are provided 
+        if self.textInput is not None and self.font is not None:
+            # Renders button using the base colour
+            self.text = self.font.render(self.textInput, True, self.baseColour)
+            # Creates a rectangle for the text and centres it on the button
+            self.textRect = self.text.get_rect(center=(self.xPos, self.yPos))
+        else:
+            self.text = None
+            self.textRect = None
         # If no image is given, use the text as the image
         if self.image is None:
             self.image = self.text
 
+    def toggleClicked(self):
+        # Toggle between clicked and normal states
+        self.isClicked = not self.isClicked
+
     def update(self, screen): # Draws button and text onto the screen
-        screen.blit(self.image, self.rect) # Draws button image onto screen
-        screen.blit(self.text, self.textRect) # Draws text image onto the button image
+        # If button is clicked use clicked image
+        currentImage = self.clickedImage if (self.isClicked and self.clickedImage is not None) else self.image
+        screen.blit(currentImage, self.rect) # Draws button image onto screen
+        if self.text is not None: # Only draws text if its there
+            screen.blit(self.text, self.textRect) # Draws text image onto the button image
 
     def checkForInput(self, position): # Checks if mouse is touching the button
         if self.rect.collidepoint(position):
@@ -40,6 +56,8 @@ class Button:
         return False
 
     def changeColour(self, position, hoverColour=None, baseColour=None): # Chnages text colour depending if button is hovered
+        if self.text is None or self.font is None:
+            return
         # Uses custom or default colours
         hColour = hoverColour if hoverColour is not None else self.hoverColour
         bColour = baseColour if baseColour is not None else self.baseColour

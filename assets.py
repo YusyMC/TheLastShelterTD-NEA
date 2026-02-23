@@ -21,12 +21,15 @@ menuBG = pygame.transform.scale(menuBG, (1280,720)) # sets menu background to 12
 # Button backboard
 
 buttonBackboard = pygame.image.load("assets/menu/menu_button_backboard.png")
-buttonBackboard = pygame.transform.scale(buttonBackboard, (300,660))
+buttonBackboardMenu = pygame.transform.scale(buttonBackboard, (300,660))
 
 # logo
 
 logo = pygame.image.load("assets/menu/logo.png")
 logo = pygame.transform.scale(logo, (100,100))
+
+# Shop
+shopBackboard = pygame.image.load("assets/game/shop/shopBackboard.png")
 
 # Group Loading
 
@@ -45,6 +48,10 @@ bossZombie = pygame.image.load("assets/objects/enemies/boss_zombie.png")
 #defence sprite sheets
 basicTurret = pygame.image.load("assets/objects/defences/basic_turret.png")
 sniperTurret = pygame.image.load("assets/objects/defences/sniper_turret.png")
+
+# Function to get the custom game font at different sizes
+def getFont(size):
+    return pygame.font.Font("assets/fonts/gameFont.otf", size)
 
 def loadImage(path):
     pilImage = Image.open(path).convert("RGBA")

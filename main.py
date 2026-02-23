@@ -12,10 +12,6 @@ pygame.init()
 screen = pygame.display.set_mode((1280, 720))
 pygame.display.set_caption("The Last Shelter TD")
 
-# Function to get the custom game font at different sizes
-def getFont(size):
-    return pygame.font.Font("assets/fonts/gameFont.otf", size)
-
 # main menu screen function
 def mainMenu():
     # Infinite loop to keep the main menu running
@@ -26,15 +22,15 @@ def mainMenu():
         # Gets mouse position
         menuMousePos = pygame.mouse.get_pos()
         # Renders main title text
-        menuText = getFont(40).render("THE LAST SHELTER", True, "#ffffff") 
+        menuText = assets.getFont(40).render("THE LAST SHELTER", True, "#ffffff") 
         # Create rectangle to position text
         menuRect = menuText.get_rect(center=(200, 160)) 
         # Renders Subtitle text
-        TDText = getFont(20).render("TOWER DEFENCE", True, "#287D20")
+        TDText = assets.getFont(20).render("TOWER DEFENCE", True, "#287D20")
         # Create rectangle to position text
         TDRect = menuText.get_rect(center=(270,195))
         # Gets the rectangle for the button backboard image
-        buttonBackboardRect = assets.buttonBackboard.get_rect(center=(200, 360))
+        buttonBackboardRect = assets.buttonBackboardMenu.get_rect(center=(200, 360))
         # Gets the rectangle for the game logo
         logoRect = assets.logo.get_rect(center=(200,100))
 
@@ -43,7 +39,7 @@ def mainMenu():
             image=pygame.image.load("assets/menu/mainMenuButton.png"), # Loads button image
             xPos=200, yPos=300, # Position on the screen
             textInput="PLAY", # Text on the button
-            font=getFont(50), # Font used for the button text
+            font=assets.getFont(50), # Font used for the button text
             baseColour="#ffffff", 
             hoverColour="#429724" # Colour of the button text when hovered with cursor
             )
@@ -52,7 +48,7 @@ def mainMenu():
             image=pygame.image.load("assets/menu/mainMenuButton.png"),
             xPos=200, yPos=400,
             textInput="SETTINGS",
-            font=getFont(50),
+            font=assets.getFont(50),
             baseColour="#ffffff",
             hoverColour="#429724"
             )
@@ -61,12 +57,12 @@ def mainMenu():
             image=pygame.image.load("assets/menu/mainMenuButton.png"),
             xPos=200, yPos=500,
             textInput="EXIT",
-            font=getFont(50),
+            font=assets.getFont(50),
             baseColour="#ffffff",
             hoverColour="#429724"
             )
         # Draws the button backboard image onto the screen
-        screen.blit(assets.buttonBackboard, buttonBackboardRect)
+        screen.blit(assets.buttonBackboardMenu, buttonBackboardRect)
         # Draws the logo image onto the screen
         screen.blit(assets.logo, logoRect)
         # Draws the game title onto the screen

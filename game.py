@@ -4,6 +4,7 @@ import sys, json
 from PIL import Image, ImageFilter
 from enemy import Enemy
 from turret import Turret
+from button import Button
 
 pygame.init()
 
@@ -71,7 +72,7 @@ def createTurret(turretIMG):
     basicTurret = Turret(framesTurret[0], mouseTileX, mouseTileY)
     # Adds turret to group
     assets.turretGroup.add(basicTurret)
-    print(assets.turretGroup) #debugging
+    #print(assets.turretGroup) #debugging
 
 # Reusable function that extracts animation frames
 def animatedMovement(spritesheet, frameWidth, frameHeight, directions=None):
@@ -110,8 +111,8 @@ def animatedMovement(spritesheet, frameWidth, frameHeight, directions=None):
 # Main game loop function
 def gameLoop():
     
-    # creates 1280x720 screen
-    screen = pygame.display.set_mode((1280,720))
+    # creates 1580x720 screen 
+    screen = pygame.display.set_mode((1280 + 300,720))
     # Display existing blurred menu background before transition starts
     screen.blit(assets.menuBG, (0,0))
     pygame.display.update()
@@ -146,6 +147,12 @@ def gameLoop():
             frameHeight=80
         )
 
+        sniperTurretFrame = animatedMovement(
+            spritesheet=assets.sniperTurret,
+            frameWidth=80,
+            frameHeight=80
+        )
+
 
         # Waypoints
         waypoints = [
@@ -165,11 +172,40 @@ def gameLoop():
         assets.enemyGroup.add(enemy)
 
     clock = pygame.time.Clock()
+    
+    # Creats a variable that stores which turret is in the shop
+    selectedTurrentFrame = None
+
+    # Creates a list to store all shop button objects
+    shopButtons = [
+        Button( # Basic Turret 
+            image=pygame.image.load("assets/game/shop/basicTurretShop.png"),
+            xPos=1345, yPos=100,
+            clickedImage=pygame.image.load("assets/game/shop/basicTurretShopSelected.png")       
+        ),
+
+        Button( # Sniper Turret
+            image=pygame.image.load("assets/game/shop/sniperTurretShop.png"),
+            xPos=1410, yPos=100,
+            clickedImage=pygame.image.load("assets/game/shop/sniperTurretShopSelected.png")       
+        )
+    ]
 
     while True:
 
         timeDiff = clock.tick(60) / 1000.0 # seconds since last frame
+        mousePos = pygame.mouse.get_pos()
 
+        # Renders Shop UI
+        shopText = assets.getFont(40).render("SHOP", True, "#ffffff")
+        shopTextRect = shopText.get_rect(center=(1430, 40))
+        buttonBackboardRect = assets.buttonBackboard.get_rect(center=(1430, 360))
+        shopBackboardRect = assets.shopBackboard.get_rect(center=(1430,180))
+        
+        # Draws UI
+        screen.blit(assets.buttonBackboard, buttonBackboardRect)
+        screen.blit(assets.shopBackboard, shopBackboardRect)
+        screen.blit(shopText, shopTextRect)
         # Displayes the fully unblurred image leaving in a state ready for gameplay
         screen.blit(frames[-1], (0,0))
 
@@ -180,6 +216,10 @@ def gameLoop():
         assets.enemyGroup.draw(screen)
         assets.turretGroup.draw(screen)
 
+        # Draws the shop buttons
+        for button in shopButtons:
+            button.update(screen)
+
         # Event Handler
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -187,9 +227,39 @@ def gameLoop():
                 sys.exit()
             # Checks if Left Mouse Click 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                createTurret(basicTurretFrame)
+                # Tracks if a shop button is clicked
+                buttonClicked = False
+                
+                # Loops through shop buttons
+                for i, button in enumerate(shopButtons):
+                    # checks if button was clicked
+                    if button.checkForInput(mousePos):
+                        buttonClicked = True
+                        # Toggle logic
+                        if button.isClicked:
+                            button.isClicked = False
+                            selectedTurrentFrame = None
+                        else:
+                            # Ensures only one button is selected at a time
+                            for btn in shopButtons:
+                                btn.isClicked = False
+                            # set selected button
+                            button.isClicked = True
+
+                            # Determins turrent type
+                            if i == 0:
+                                selectedTurrentFrame = basicTurretFrame
+                            elif i == 1:
+                                selectedTurrentFrame = sniperTurretFrame
+                        break
+
+                # If click was not on a button        
+                if not buttonClicked and selectedTurrentFrame is not None:
+                    createTurret(selectedTurrentFrame)
         
         #update display
         pygame.display.flip()
         
         pygame.display.update()
+
+#gameLoop()
