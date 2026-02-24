@@ -69,7 +69,7 @@ def createTurret(turretIMG):
     # Selects up direction animation frame
     framesTurret = turretIMG["up"]
     # Creates animation frame using Turret class
-    basicTurret = Turret(framesTurret[0], mouseTileX, mouseTileY)
+    basicTurret = Turret(assets.basicTurret, mouseTileX, mouseTileY)
     # Adds turret to group
     assets.turretGroup.add(basicTurret)
     #print(assets.turretGroup) #debugging
@@ -211,6 +211,7 @@ def gameLoop():
 
         # Update group for every sprite in it
         assets.enemyGroup.update(timeDiff)
+        assets.turretGroup.update()
 
         # Draws every enemy sprite from the group onto the creen
         assets.enemyGroup.draw(screen)
@@ -253,7 +254,7 @@ def gameLoop():
                                 selectedTurrentFrame = sniperTurretFrame
                         break
 
-                # If click was not on a button        
+                # If click was not on a button  
                 if not buttonClicked and selectedTurrentFrame is not None:
                     createTurret(selectedTurrentFrame)
         
