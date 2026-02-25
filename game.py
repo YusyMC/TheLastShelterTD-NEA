@@ -32,7 +32,7 @@ def menuUnblur():
     return frames
 
 # Creates turret on mouse
-def createTurret(turretIMG):
+def createTurret(turretType):
     # Gets mouse position
     mousePos = pygame.mouse.get_pos()
     # Converts pixel position into grid tile position
@@ -66,13 +66,18 @@ def createTurret(turretIMG):
         if getattr(t, "tileX", None) == mouseTileX and getattr(t, "tileY", None) == mouseTileY:
             return
     
-    # Selects up direction animation frame
-    framesTurret = turretIMG["up"]
-    # Creates animation frame using Turret class
-    basicTurret = Turret(assets.basicTurret, mouseTileX, mouseTileY)
+    # Determine which spritesheet to use based on turret type
+    if turretType == 0: # Basic Turret
+        spriteSheet = assets.basicTurret
+    elif turretType == 1: # Sniper turret
+        spriteSheet = assets.sniperTurret
+    else:
+        return
+    
+    # Creates turret with the correct spritesheet
+    turret = Turret(spriteSheet, mouseTileX, mouseTileY)
     # Adds turret to group
-    assets.turretGroup.add(basicTurret)
-    #print(assets.turretGroup) #debugging
+    assets.turretGroup.add(turret)
 
 # Reusable function that extracts animation frames
 def animatedMovement(spritesheet, frameWidth, frameHeight, directions=None):
@@ -141,19 +146,6 @@ def gameLoop():
             frameHeight=64
         )
 
-        basicTurretFrame = animatedMovement(
-            spritesheet=assets.basicTurret,
-            frameWidth=80,
-            frameHeight=80
-        )
-
-        sniperTurretFrame = animatedMovement(
-            spritesheet=assets.sniperTurret,
-            frameWidth=80,
-            frameHeight=80
-        )
-
-
         # Waypoints
         waypoints = [
             (1280,440), # Enemy Spawn Point
@@ -173,8 +165,8 @@ def gameLoop():
 
     clock = pygame.time.Clock()
     
-    # Creats a variable that stores which turret is in the shop
-    selectedTurrentFrame = None
+    # Creates a variable that stores which turret is selected (0=basic, 1=sniper, None=none)
+    selectedTurretType = None
 
     # Creates a list to store all shop button objects
     shopButtons = [
@@ -239,28 +231,24 @@ def gameLoop():
                         # Toggle logic
                         if button.isClicked:
                             button.isClicked = False
-                            selectedTurrentFrame = None
+                            selectedTurretType = None
                         else:
                             # Ensures only one button is selected at a time
                             for btn in shopButtons:
                                 btn.isClicked = False
                             # set selected button
                             button.isClicked = True
-
-                            # Determins turrent type
-                            if i == 0:
-                                selectedTurrentFrame = basicTurretFrame
-                            elif i == 1:
-                                selectedTurrentFrame = sniperTurretFrame
+                            # Track turret type by button index (0=basic, 1=sniper)
+                            selectedTurretType = i
                         break
 
                 # If click was not on a button  
-                if not buttonClicked and selectedTurrentFrame is not None:
-                    createTurret(selectedTurrentFrame)
+                if not buttonClicked and selectedTurretType is not None:
+                    createTurret(selectedTurretType)
         
         #update display
         pygame.display.flip()
         
         pygame.display.update()
 
-#gameLoop()
+gameLoop()

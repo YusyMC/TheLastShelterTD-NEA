@@ -6,7 +6,7 @@ class Turret(pygame.sprite.Sprite):
         # Integrates enemy object with pygame's sprite system
         pygame.sprite.Sprite.__init__(self)
         self.range = 90
-        self.cooldown = 1500
+        self.cooldown = 3000
         self.lastShot = pygame.time.get_ticks()
         # Store tile position inside object
         self.tileX = tileX
@@ -39,7 +39,7 @@ class Turret(pygame.sprite.Sprite):
         # Extracts frames from spritesheet
         size = 80
         animationList = []
-        for x in range(2):
+        for x in range(3):
             tempIMG = self.spriteSheet.subsurface(x * size, 0, 80, 80)
             animationList.append(tempIMG)
         return animationList
