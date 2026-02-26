@@ -111,7 +111,20 @@ def animatedMovement(spritesheet, frameWidth, frameHeight, directions=None):
             animations[directions[rowX]] = frames
     
     return animations
-        
+
+# detects if a player has clicked a turret  
+def selectTurret(mousePos):
+    # converts pixel position into grid tile position
+    mouseTileX = mousePos[0] // 80
+    mouseTileY = mousePos[1] // 80
+    # checks if the tile is occupied by turret
+    for t in assets.turretGroup:
+        if getattr(t, "tileX", None) == mouseTileX and getattr(t, "tileY", None) == mouseTileY:
+            return t
+
+def clearSelection():
+    for turret in assets.turretGroup:
+        turret.selected = False
 
 # Main game loop function
 def gameLoop():
@@ -121,6 +134,9 @@ def gameLoop():
     # Display existing blurred menu background before transition starts
     screen.blit(assets.menuBG, (0,0))
     pygame.display.update()
+
+
+    selectedTurret = None
 
     # Precompute frames and play them once
     frames = menuUnblur()
@@ -205,9 +221,14 @@ def gameLoop():
         assets.enemyGroup.update(timeDiff)
         assets.turretGroup.update()
 
+        # highlight the selected turrent
+        if selectedTurret:  
+            selectedTurret.selected = True
+
         # Draws every enemy sprite from the group onto the creen
         assets.enemyGroup.draw(screen)
-        assets.turretGroup.draw(screen)
+        for turret in assets.turretGroup:
+            turret.draw(screen)
 
         # Draws the shop buttons
         for button in shopButtons:
@@ -241,10 +262,15 @@ def gameLoop():
                             # Track turret type by button index (0=basic, 1=sniper)
                             selectedTurretType = i
                         break
+                
+                selectedTurret = None
+                clearSelection()
 
                 # If click was not on a button  
                 if not buttonClicked and selectedTurretType is not None:
                     createTurret(selectedTurretType)
+                else:
+                    selectedTurret = selectTurret(mousePos)
         
         #update display
         pygame.display.flip()
