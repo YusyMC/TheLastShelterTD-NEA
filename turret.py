@@ -1,4 +1,5 @@
 import pygame
+import math
 
 # Creates Turret class and inherits from pygames sprite class
 class Turret(pygame.sprite.Sprite):
@@ -13,6 +14,8 @@ class Turret(pygame.sprite.Sprite):
         self.lastShot = pygame.time.get_ticks()
         # stores whtere turret is being selectedby player
         self.selected = False
+        # Stores target that turret is aiming at
+        self.target = None
         # Store tile position inside object
         self.tileX = tileX
         self.tileY = tileY
@@ -29,8 +32,12 @@ class Turret(pygame.sprite.Sprite):
         # srtores when last frame changed
         self.updateTime = pygame.time.get_ticks()
 
-        # Assigns turret's image
-        self.image = self.animationList[self.frameIndex]
+        # stores to control angle rotation
+        self.angle = 90
+        # Assigns turret's original image
+        self.OrignalImage = self.animationList[self.frameIndex]
+        # storing rotating turret image
+        self.image = pygame.transform.rotate(self.OrignalImage, self.angle)
         # Created rectangle around image
         self.rect = self.image.get_rect()
         # Centre of rectangle
@@ -60,14 +67,31 @@ class Turret(pygame.sprite.Sprite):
             animationList.append(tempIMG)
         return animationList
     
-    def update(self):
-        # Search for new target once turret cools down
-        if pygame.time.get_ticks() - self.lastShot > self.cooldown:
+    def update(self, enemyGroup):
+        # only fires when there is a target now
+        if self.target:
             self.playAnimation()
+        else:
+            # Search for new target once turret cools down
+            if pygame.time.get_ticks() - self.lastShot > self.cooldown:
+                self.pickTarget(enemyGroup)
+    
+    def pickTarget(self, enemyGroup):
+        # Pythagoras theorem to calculate distance
+        xDistance = 0
+        yDistance = 0
+        for enemy in enemyGroup:
+            xDistance = enemy.pos[0] - self.x
+            yDistance = enemy.pos[1] - self.y
+            distance = math.sqrt(xDistance**2 + yDistance**2)
+            if distance < self.range:
+                self.target = enemy
+                # calculates the angle towards it
+                self.angle = math.degrees(math.atan2(-yDistance, xDistance))
     
     def playAnimation(self):
         # Updates image
-        self.image = self.animationList[self.frameIndex]
+        self.OrignalImage = self.animationList[self.frameIndex]
         # checks if time has passed
         if pygame.time.get_ticks() - self.updateTime > 150:
             self.updateTime = pygame.time.get_ticks()
@@ -76,9 +100,16 @@ class Turret(pygame.sprite.Sprite):
             if self.frameIndex >= len(self.animationList):
                 self.frameIndex = 0
                 self.lastShot = pygame.time.get_ticks()
+                # Resetting target after animation
+                self.target = None
 
     # Manually draws the turret
     def draw(self, surface):
+        # Rotating
+        self.image = pygame.transform.rotate(self.OrignalImage, self.angle - 90)
+        # Calculating rect after rotation
+        self.rect = self.image.get_rect()
+        self.rect.center = (self.x, self.y)
         surface.blit(self.image, self.rect)
         # If turret selected, draws the range circle
         if self.selected:

@@ -219,7 +219,7 @@ def gameLoop():
 
         # Update group for every sprite in it
         assets.enemyGroup.update(timeDiff)
-        assets.turretGroup.update()
+        assets.turretGroup.update(assets.enemyGroup)
 
         # highlight the selected turrent
         if selectedTurret:  
