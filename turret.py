@@ -1,15 +1,25 @@
-import pygame
-import math
-
+import pygame, math
+import assets
+from turret_data import BASIC_TURRET_DATA, SNIPER_TURRET_DATA
 # Creates Turret class and inherits from pygames sprite class
 class Turret(pygame.sprite.Sprite):
     def __init__(self, spriteSheet, tileX, tileY):
         # Integrates enemy object with pygame's sprite system
         pygame.sprite.Sprite.__init__(self)
-        # Stores attack range
-        self.range = 90
-        # Cooldown of animation
-        self.cooldown = 3000
+        self.upgradeLevel = 1
+        # animation variables
+        self.spriteSheet = spriteSheet
+
+        # Checks which sprite sheet is being used so it can identify the object data to use
+        if self.spriteSheet == assets.basicTurret:
+            self.range = BASIC_TURRET_DATA[self.upgradeLevel - 1].get("range")
+            # Cooldown of animation
+            self.cooldown = BASIC_TURRET_DATA[self.upgradeLevel - 1].get("cooldown")
+        if self.spriteSheet == assets.sniperTurret:
+            self.range = SNIPER_TURRET_DATA[self.upgradeLevel - 1].get("range")
+            # Cooldown of animation
+            self.cooldown = SNIPER_TURRET_DATA[self.upgradeLevel - 1].get("cooldown")
+
         # stores time of last fired
         self.lastShot = pygame.time.get_ticks()
         # stores whtere turret is being selectedby player
@@ -23,8 +33,6 @@ class Turret(pygame.sprite.Sprite):
         self.x = (self.tileX + 0.5) * 80
         self.y = (self.tileY + 0.5) * 80
 
-        # animation variables
-        self.spriteSheet = spriteSheet
         # to extract frames
         self.animationList = self.loadImages()
         # tracks which animation is displayed
@@ -103,6 +111,31 @@ class Turret(pygame.sprite.Sprite):
                 # Resetting target after animation
                 self.target = None
 
+    def upgrade(self):
+        self.upgradeLevel += 1
+        if self.spriteSheet == assets.basicTurret:
+            self.range = BASIC_TURRET_DATA[self.upgradeLevel - 1].get("range")
+            # Cooldown of animation
+            self.cooldown = BASIC_TURRET_DATA[self.upgradeLevel - 1].get("cooldown")
+        if self.spriteSheet == assets.sniperTurret:
+            self.range = SNIPER_TURRET_DATA[self.upgradeLevel - 1].get("range")
+            # Cooldown of animation
+            self.cooldown = SNIPER_TURRET_DATA[self.upgradeLevel - 1].get("cooldown")
+
+        # upgrade range circle
+        self.rangeImage = pygame.Surface((self.range * 2, self.range * 2))
+        # makes it black temporarily
+        self.rangeImage.fill((0,0,0))
+        # black transparent
+        self.rangeImage.set_colorkey((0,0,0))
+        # draws the circle
+        pygame.draw.circle(self.rangeImage, "grey100", (self.range, self.range), self.range)
+        # makes the circle semi transparent
+        self.rangeImage.set_alpha(100)
+        # positions it above the turrent centre
+        self.rangeRect = self.rangeImage.get_rect()
+        self.rangeRect.center = self.rect.center
+            
     # Manually draws the turret
     def draw(self, surface):
         # Rotating

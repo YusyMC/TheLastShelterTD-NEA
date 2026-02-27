@@ -198,6 +198,15 @@ def gameLoop():
             clickedImage=pygame.image.load("assets/game/shop/sniperTurretShopSelected.png")       
         )
     ]
+    # Upgrade button
+    upgradeButton = Button(
+        image=pygame.image.load("assets/menu/mainMenuButton.png"), # Loads button image
+        xPos=1430, yPos=500, # Position on the screen
+        textInput="UPGRADE", # Text on the button
+        font=assets.getFont(50), # Font used for the button text
+        baseColour="#ffffff", 
+        hoverColour="#429724" # Colour of the button text when hovered with cursor
+    )
 
     while True:
 
@@ -233,6 +242,11 @@ def gameLoop():
         # Draws the shop buttons
         for button in shopButtons:
             button.update(screen)
+        
+        # shows upgrade only when turret selected
+        if selectedTurret:
+            if selectedTurret.upgradeLevel < 4:
+                upgradeButton.update(screen)
 
         # Event Handler
         for event in pygame.event.get():
@@ -263,18 +277,22 @@ def gameLoop():
                             selectedTurretType = i
                         break
                 
-                selectedTurret = None
-                clearSelection()
-
-                # If click was not on a button  
-                if not buttonClicked and selectedTurretType is not None:
-                    createTurret(selectedTurretType)
+                # Check if upgrade button was clicked (before clearing selection)
+                if selectedTurret and upgradeButton.checkForInput(mousePos):
+                        selectedTurret.upgrade()
                 else:
-                    selectedTurret = selectTurret(mousePos)
+                    selectedTurret = None
+                    clearSelection()
+
+                    # If click was not on a button  
+                    if not buttonClicked and selectedTurretType is not None:
+                        createTurret(selectedTurretType)
+                    else:
+                        selectedTurret = selectTurret(mousePos)
         
         #update display
         pygame.display.flip()
         
         pygame.display.update()
 
-gameLoop()
+#gameLoop()
