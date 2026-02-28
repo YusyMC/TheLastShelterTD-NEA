@@ -15,10 +15,14 @@ class Turret(pygame.sprite.Sprite):
             self.range = BASIC_TURRET_DATA[self.upgradeLevel - 1].get("range")
             # Cooldown of animation
             self.cooldown = BASIC_TURRET_DATA[self.upgradeLevel - 1].get("cooldown")
+            # Damage dealt depending on level
+            self.damage = BASIC_TURRET_DATA[self.upgradeLevel - 1].get("damage")
         if self.spriteSheet == assets.sniperTurret:
             self.range = SNIPER_TURRET_DATA[self.upgradeLevel - 1].get("range")
             # Cooldown of animation
             self.cooldown = SNIPER_TURRET_DATA[self.upgradeLevel - 1].get("cooldown")
+            # Damage dealt depending on level
+            self.damage = SNIPER_TURRET_DATA[self.upgradeLevel - 1].get("damage")
 
         # stores time of last fired
         self.lastShot = pygame.time.get_ticks()
@@ -89,13 +93,16 @@ class Turret(pygame.sprite.Sprite):
         xDistance = 0
         yDistance = 0
         for enemy in enemyGroup:
-            xDistance = enemy.pos[0] - self.x
-            yDistance = enemy.pos[1] - self.y
-            distance = math.sqrt(xDistance**2 + yDistance**2)
-            if distance < self.range:
-                self.target = enemy
-                # calculates the angle towards it
-                self.angle = math.degrees(math.atan2(-yDistance, xDistance))
+            if enemy.health > 0:
+                xDistance = enemy.pos[0] - self.x
+                yDistance = enemy.pos[1] - self.y
+                distance = math.sqrt(xDistance**2 + yDistance**2)
+                if distance < self.range:
+                    self.target = enemy
+                    # calculates the angle towards it
+                    self.angle = math.degrees(math.atan2(-yDistance, xDistance))
+                    # Damage enemy
+                    self.target.health -= self.damage
     
     def playAnimation(self):
         # Updates image

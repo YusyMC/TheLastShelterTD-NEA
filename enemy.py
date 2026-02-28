@@ -38,6 +38,7 @@ class Enemy(pygame.sprite.Sprite): # Inheritance, all functionalities of sprite 
     def update(self, timeDiff):
         self.move(timeDiff)
         self.animate(timeDiff)
+        self.isDead()
     
     # Method for animation logic
     def animate(self, timeDiff):
@@ -95,9 +96,7 @@ class Enemy(pygame.sprite.Sprite): # Inheritance, all functionalities of sprite 
             self.targetWaypoint += 1
         # Updates rectangle position to vector position
         self.rect.center = (round(self.pos.x), round(self.pos.y))
-    
-    def takeDamage(self):
-        return 0 # TODO
 
     def isDead(self):
-        return 0 # TODO
+        if self.health <= 0:
+            self.kill()
