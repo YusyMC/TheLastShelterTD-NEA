@@ -1,11 +1,12 @@
 import pygame
 from pygame.math import Vector2
+from enemy_data import ENEMY_DATA
 
 # Enemy class
 class Enemy(pygame.sprite.Sprite): # Inheritance, all functionalities of sprite class 
 
     # Constructor Method
-    def __init__(self, waypoints, animations):
+    def __init__(self, enemyType, waypoints, animations):
         # Integrates enemy object with pygame's sprite system
         pygame.sprite.Sprite.__init__(self)
         # storing waypoints list
@@ -15,7 +16,9 @@ class Enemy(pygame.sprite.Sprite): # Inheritance, all functionalities of sprite 
         # Stores index of the next waypoint to move towards
         self.targetWaypoint = 1
         # Speed changes for different variables
-        self.speed = 60
+        self.speed = ENEMY_DATA.get(enemyType)["speed"]
+
+        self.health = ENEMY_DATA.get(enemyType)["health"]
         # Stores animation dictionary
         self.animations = animations
         # Sets starting direction

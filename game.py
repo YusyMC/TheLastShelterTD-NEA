@@ -5,6 +5,7 @@ from PIL import Image, ImageFilter
 from enemy import Enemy
 from turret import Turret
 from button import Button
+from enemy_data import ENEMY_WAVE_DATA
 
 pygame.init()
 
@@ -126,6 +127,24 @@ def clearSelection():
     for turret in assets.turretGroup:
         turret.selected = False
 
+# Wave spawning function - generates a queue of enemies for a wave
+def spawnWave(waveNumber):
+
+    # Retrieve the enemy composition for this wave from ENEMY_WAVE_DATA
+    waveData = ENEMY_WAVE_DATA[waveNumber]
+    
+    # Create a queue (list) to store each enemy type that needs to spawn
+    enemiesToSpawn = []
+    
+    # For each enemy type (walker, runner, armoured, boss) in the wave
+    for enemyType, count in waveData.items():
+        # Add the enemy type to the queue 'count' times
+        for i in range(count):
+            enemiesToSpawn.append(enemyType)
+    
+    # Return the complete queue of enemies to spawn
+    return enemiesToSpawn
+
 # Main game loop function
 def gameLoop():
     
@@ -135,11 +154,51 @@ def gameLoop():
     screen.blit(assets.menuBG, (0,0))
     pygame.display.update()
 
+    # wave tracking
+    currentWave = 0
+    waveSpawned = False
+    waveEnemiesSpawned = 0
+
 
     selectedTurret = None
 
     # Precompute frames and play them once
     frames = menuUnblur()
+
+    # Converts walker zombie spritesheet into individual animation frames
+    walkingZombieAnimated = animatedMovement(
+        spritesheet=assets.walkerZombie,
+        frameWidth=48,
+        frameHeight=64
+    )
+    runnerZombieAnimated = animatedMovement(
+        spritesheet=assets.runnerZombie,
+        frameWidth=48,
+        frameHeight=64
+    )
+    armouredZombieAnimated = animatedMovement(
+        spritesheet=assets.armouredZombie,
+        frameWidth=48,
+        frameHeight=64
+    )
+    bossZombieAnimated = animatedMovement(
+        spritesheet=assets.bossZombie,
+        frameWidth=48,
+        frameHeight=64
+    )
+
+    
+    # Waypoints define the path enemies will follow across the map
+    waypoints = [
+        (1280,440), # Enemy Spawn Point
+        (920,440), # First turn point
+        (920,200), # Second turn point
+        (520,200), # Third turn point
+        (520,600), # Fourth turn point
+        (280,600), # Fifth turn point
+        (280,360), # Sixth turn point
+        (40,360) # Zombie end point
+    ]
 
     # Iterates through each frame  of the unblur animation
     for menuBG in frames:
@@ -155,31 +214,20 @@ def gameLoop():
         pygame.display.update()
         pygame.time.delay(180)  # milliseconds between steps to control animeation speed
 
-        # Converts walker zombie spritesheet into individual animation frames
-        walkingZombieAnimated = animatedMovement(
-            spritesheet=assets.walkerZombie,
-            frameWidth=48,
-            frameHeight=64
-        )
-
-        # Waypoints
-        waypoints = [
-            (1280,440), # Enemy Spawn Point
-            (920,440), # First turn point
-            (920,200), # Second turn point
-            (520,200), # Third turn point
-            (520,600), # Fourth turn point
-            (280,600), # Fifth turn point
-            (280,360), # Sixth turn point
-            (40,360) # Zombie end point
-        ]
-
-        # creating enemy object
-        enemy = Enemy(waypoints, walkingZombieAnimated)
-        # Addes enemy to the group
-        assets.enemyGroup.add(enemy)
-
     clock = pygame.time.Clock()
+    
+    # Store animations in a dictionary for easier access during spawning
+    animations = {
+        "walker": walkingZombieAnimated,
+        "runner": runnerZombieAnimated,
+        "armoured": armouredZombieAnimated,
+        "boss": bossZombieAnimated
+    }
+    
+    # Wave system spawn tracking variables
+    enemiesToSpawn = []  # Queue of enemies waiting to be spawned for current wave
+    spawnTimer = 0  # Timer tracking time since last enemy spawn
+    spawnDelay = 1  # Delay in seconds between each enemy spawn (adjust to change difficulty)
     
     # Creates a variable that stores which turret is selected (0=basic, 1=sniper, None=none)
     selectedTurretType = None
@@ -213,16 +261,45 @@ def gameLoop():
         timeDiff = clock.tick(60) / 1000.0 # seconds since last frame
         mousePos = pygame.mouse.get_pos()
 
+
+        # Only triggers if all enemies from current wave are defeated AND there are more waves
+        if len(assets.enemyGroup) == 0 and currentWave < len(ENEMY_WAVE_DATA):
+            # If the spawn queue is empty, load the next wave
+            if len(enemiesToSpawn) == 0:
+                # Generate the queue of enemies for this wave
+                enemiesToSpawn = spawnWave(currentWave)
+                spawnTimer = 0  # Reset spawn timer
+                currentWave += 1  # Increment wave counter for display
+
+        # Timed enemy spawning - spawns enemies at intervals instead of all at once
+        if enemiesToSpawn:
+            # Accumulate time since last enemy spawn
+            spawnTimer += timeDiff
+            # Check if enough time has passed to spawn another enemy
+            if spawnTimer >= spawnDelay:
+                # Remove the next enemy type from the queue (FIFO - First In, First Out)
+                enemyType = enemiesToSpawn.pop(0)
+                # Create new enemy with correct animation and add to game
+                newEnemy = Enemy(enemyType, waypoints, animations[enemyType])
+                assets.enemyGroup.add(newEnemy)
+                spawnTimer = 0  # Reset timer for next spawn
+
         # Renders Shop UI
         shopText = assets.getFont(40).render("SHOP", True, "#ffffff")
         shopTextRect = shopText.get_rect(center=(1430, 40))
         buttonBackboardRect = assets.buttonBackboard.get_rect(center=(1430, 360))
         shopBackboardRect = assets.shopBackboard.get_rect(center=(1430,180))
+        # NEW: Display current wave number on screen
+        # Shows which wave the player is currently on
+        waveText = assets.getFont(50).render(f"Wave {currentWave}", True, "#ffffff")
+        waveTextRect = waveText.get_rect(center=(1430, 650))
         
         # Draws UI
+        # Render all UI elements on screen
         screen.blit(assets.buttonBackboard, buttonBackboardRect)
         screen.blit(assets.shopBackboard, shopBackboardRect)
         screen.blit(shopText, shopTextRect)
+        screen.blit(waveText, waveTextRect)  # NEW: Draw wave number display
         # Displayes the fully unblurred image leaving in a state ready for gameplay
         screen.blit(frames[-1], (0,0))
 
@@ -278,7 +355,7 @@ def gameLoop():
                         break
                 
                 # Check if upgrade button was clicked (before clearing selection)
-                if selectedTurret and upgradeButton.checkForInput(mousePos):
+                if selectedTurret and selectedTurret.upgradeLevel < 4 and upgradeButton.checkForInput(mousePos):
                         selectedTurret.upgrade()
                 else:
                     selectedTurret = None
@@ -295,4 +372,4 @@ def gameLoop():
         
         pygame.display.update()
 
-#gameLoop()
+gameLoop()
