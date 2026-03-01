@@ -1,19 +1,27 @@
 ENEMY_DATA = {
     "walker": {
         "health": 10,
-        "speed": 30
+        "speed": 30,
+        "damage": 5,
+        "currency": 25
     },
     "runner": {
         "health": 10,
-        "speed": 60
+        "speed": 60,
+        "damage": 5,
+        "currency": 50
     },
     "armoured": {
         "health": 50,
-        "speed": 15
+        "speed": 15,
+        "damage": 20,
+        "currency": 100
     },
     "boss": {
         "health": 100,
-        "speed": 30
+        "speed": 30,
+        "damage": 100,
+        "currency": 500
     }
 }
 

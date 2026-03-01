@@ -30,6 +30,8 @@ logo = pygame.transform.scale(logo, (100,100))
 
 # Shop
 shopBackboard = pygame.image.load("assets/game/shop/shopBackboard.png")
+currencyIcon = pygame.image.load("assets/game/shop/coin.png")
+currencyIcon = pygame.transform.scale(currencyIcon, (50,50))
 
 # Group Loading
 

@@ -118,8 +118,24 @@ class Turret(pygame.sprite.Sprite):
                 # Resetting target after animation
                 self.target = None
 
-    def upgrade(self):
+ 
+    # upgrade method for upgrading turret
+    def upgrade(self, playerStats):
+        # Get the upgrade cost for current level
+        upgradeCost = 0
+        if self.spriteSheet == assets.basicTurret:
+            upgradeCost = BASIC_TURRET_DATA[self.upgradeLevel - 1].get("upgradeToNextLevelCost")
+        elif self.spriteSheet == assets.sniperTurret:
+            upgradeCost = SNIPER_TURRET_DATA[self.upgradeLevel - 1].get("upgradeToNextLevelCost")
+        
+        # Check if player has enough money
+        if playerStats.money < upgradeCost:
+            return False  # Insufficient funds
+        
+        # Deduct cost and upgrade
+        playerStats.loseMoney(upgradeCost)
         self.upgradeLevel += 1
+        
         if self.spriteSheet == assets.basicTurret:
             self.range = BASIC_TURRET_DATA[self.upgradeLevel - 1].get("range")
             # Cooldown of animation
@@ -142,6 +158,8 @@ class Turret(pygame.sprite.Sprite):
         # positions it above the turrent centre
         self.rangeRect = self.rangeImage.get_rect()
         self.rangeRect.center = self.rect.center
+        
+        return True  # Upgrade successful
             
     # Manually draws the turret
     def draw(self, surface):

@@ -6,9 +6,12 @@ from enemy_data import ENEMY_DATA
 class Enemy(pygame.sprite.Sprite): # Inheritance, all functionalities of sprite class 
 
     # Constructor Method
-    def __init__(self, enemyType, waypoints, animations):
+    def __init__(self, enemyType, waypoints, animations, playerStats):
         # Integrates enemy object with pygame's sprite system
         pygame.sprite.Sprite.__init__(self)
+
+        self.playerStats = playerStats
+        self.enemyType = enemyType
         # storing waypoints list
         self.waypoints = waypoints
         # Converts the first waypoint into a vector
@@ -58,7 +61,9 @@ class Enemy(pygame.sprite.Sprite): # Inheritance, all functionalities of sprite 
     def move(self, timeDiff):
         # Checks if waypoint is in range
         if self.targetWaypoint >= len(self.waypoints):
-            # Checks if enemy has reached the end of the path
+            # Damage shelter when enemy reaches the end
+            self.playerStats.loseHealth(ENEMY_DATA.get(self.enemyType)["damage"])
+            self.health = 0
             return # Stops moving
         
         # Converts next waypoint into a vector
@@ -98,5 +103,9 @@ class Enemy(pygame.sprite.Sprite): # Inheritance, all functionalities of sprite 
         self.rect.center = (round(self.pos.x), round(self.pos.y))
 
     def isDead(self):
+        # When an enemy's health reaches 0, this method:
         if self.health <= 0:
+            # Award currency for killing the enemy
+            currencyReward = ENEMY_DATA.get(self.enemyType)["currency"]
+            self.playerStats.addMoney(currencyReward)
             self.kill()

@@ -6,6 +6,8 @@ from enemy import Enemy
 from turret import Turret
 from button import Button
 from enemy_data import ENEMY_WAVE_DATA
+from playerStats import PlayerStats
+from turret_data import BASIC_TURRET_DATA, SNIPER_TURRET_DATA
 
 pygame.init()
 
@@ -32,8 +34,8 @@ def menuUnblur():
 
     return frames
 
-# Creates turret on mouse
-def createTurret(turretType):
+# Create turret function
+def createTurret(turretType, playerStats, screen):
     # Gets mouse position
     mousePos = pygame.mouse.get_pos()
     # Converts pixel position into grid tile position
@@ -69,16 +71,27 @@ def createTurret(turretType):
     
     # Determine which spritesheet to use based on turret type
     if turretType == 0: # Basic Turret
+        turretCost = 50
         spriteSheet = assets.basicTurret
     elif turretType == 1: # Sniper turret
+        turretCost = 100
         spriteSheet = assets.sniperTurret
     else:
         return
+
+    # Check if player has enough money for the turret
+    if playerStats.money < turretCost:
+        return False  # Return False to indicate insufficient funds
+    
+    # Deduct the turret cost from player's money
+    playerStats.loseMoney(turretCost)
     
     # Creates turret with the correct spritesheet
     turret = Turret(spriteSheet, mouseTileX, mouseTileY)
     # Adds turret to group
     assets.turretGroup.add(turret)
+    # Return True on successful turret placement 
+    return True  # Return True on success
 
 # Reusable function that extracts animation frames
 def animatedMovement(spritesheet, frameWidth, frameHeight, directions=None):
@@ -197,7 +210,7 @@ def gameLoop():
         (520,600), # Fourth turn point
         (280,600), # Fifth turn point
         (280,360), # Sixth turn point
-        (40,360) # Zombie end point
+        (0,360) # Zombie end point
     ]
 
     # Iterates through each frame  of the unblur animation
@@ -232,6 +245,14 @@ def gameLoop():
     # Creates a variable that stores which turret is selected (0=basic, 1=sniper, None=none)
     selectedTurretType = None
 
+    # This creates a single PlayerStats object that tracks money, health, and score throughout the game
+    playerStats = PlayerStats()
+    
+    # Add timer variables for displaying insufficient funds message
+    insufficientFundsTime = 0
+    # how long message stays visible (2000ms = 2 seconds)
+    INSUFFICIENT_FUNDS_DURATION = 2000  # milliseconds
+    
     # Creates a list to store all shop button objects
     shopButtons = [
         Button( # Basic Turret 
@@ -249,7 +270,7 @@ def gameLoop():
     # Upgrade button
     upgradeButton = Button(
         image=pygame.image.load("assets/menu/mainMenuButton.png"), # Loads button image
-        xPos=1430, yPos=500, # Position on the screen
+        xPos=1430, yPos=500, # Position on the sreen
         textInput="UPGRADE", # Text on the button
         font=assets.getFont(50), # Font used for the button text
         baseColour="#ffffff", 
@@ -279,17 +300,23 @@ def gameLoop():
             if spawnTimer >= spawnDelay:
                 # Remove the next enemy type from the queue (FIFO - First In, First Out)
                 enemyType = enemiesToSpawn.pop(0)
-                # Create new enemy with correct animation and add to game
-                newEnemy = Enemy(enemyType, waypoints, animations[enemyType])
+
+                # This allows enemies to damage shelter health and award currency when killed
+                newEnemy = Enemy(enemyType, waypoints, animations[enemyType], playerStats)
                 assets.enemyGroup.add(newEnemy)
                 spawnTimer = 0  # Reset timer for next spawn
 
         # Renders Shop UI
+        moneyText = assets.getFont(40).render(f": {playerStats.money}", True, "#d0cc03")
+        moneyTextRect = moneyText.get_rect(center=(1506, 400))
+        healthText = assets.getFont(40).render(f"Shelter HP: {playerStats.shelterHealth}", True, "#e21a1a")
+        healthTextRect = healthText.get_rect(center=(1430, 440))
         shopText = assets.getFont(40).render("SHOP", True, "#ffffff")
         shopTextRect = shopText.get_rect(center=(1430, 40))
         buttonBackboardRect = assets.buttonBackboard.get_rect(center=(1430, 360))
         shopBackboardRect = assets.shopBackboard.get_rect(center=(1430,180))
-        # NEW: Display current wave number on screen
+        currencyIconRect = assets.currencyIcon.get_rect(center=(1440, 405))
+
         # Shows which wave the player is currently on
         waveText = assets.getFont(50).render(f"Wave {currentWave}", True, "#ffffff")
         waveTextRect = waveText.get_rect(center=(1430, 650))
@@ -299,7 +326,11 @@ def gameLoop():
         screen.blit(assets.buttonBackboard, buttonBackboardRect)
         screen.blit(assets.shopBackboard, shopBackboardRect)
         screen.blit(shopText, shopTextRect)
-        screen.blit(waveText, waveTextRect)  # NEW: Draw wave number display
+        screen.blit(waveText, waveTextRect)
+        screen.blit(assets.currencyIcon, currencyIconRect)
+        screen.blit(moneyText, moneyTextRect)
+        screen.blit(healthText, healthTextRect)
+        
         # Displayes the fully unblurred image leaving in a state ready for gameplay
         screen.blit(frames[-1], (0,0))
 
@@ -320,9 +351,26 @@ def gameLoop():
         for button in shopButtons:
             button.update(screen)
         
-        # shows upgrade only when turret selected
+        # Display insufficient funds message with timer
+        currentTime = pygame.time.get_ticks()
+        if insufficientFundsTime > 0 and currentTime - insufficientFundsTime < INSUFFICIENT_FUNDS_DURATION:
+            insufFundsText = assets.getFont(20).render("You have insufficient funds!", True, "#ff0000")
+            insufFundsTextRect = insufFundsText.get_rect(center=(1430, 700))
+            screen.blit(insufFundsText, insufFundsTextRect)
+        
+        # Display upgrade cost and button when turret is selected
         if selectedTurret:
             if selectedTurret.upgradeLevel < 4:
+                # Calculate upgrade cost based on turret type and current level
+                upgradeCost = 0
+                if selectedTurret.spriteSheet == assets.basicTurret:
+                    upgradeCost = BASIC_TURRET_DATA[selectedTurret.upgradeLevel - 1].get("upgradeToNextLevelCost")
+                elif selectedTurret.spriteSheet == assets.sniperTurret:
+                    upgradeCost = SNIPER_TURRET_DATA[selectedTurret.upgradeLevel - 1].get("upgradeToNextLevelCost")
+                
+                upgradeCostText = assets.getFont(20).render(f"Upgrade Cost: {upgradeCost}", True, "#d0cc03")
+                upgradeCostTextRect = upgradeCostText.get_rect(center=(1430, 545))
+                screen.blit(upgradeCostText, upgradeCostTextRect)
                 upgradeButton.update(screen)
 
         # Event Handler
@@ -354,16 +402,22 @@ def gameLoop():
                             selectedTurretType = i
                         break
                 
-                # Check if upgrade button was clicked (before clearing selection)
+                
+                # When upgrade button is clicked, the turret's upgrade() method is called with playerStats
                 if selectedTurret and selectedTurret.upgradeLevel < 4 and upgradeButton.checkForInput(mousePos):
-                        selectedTurret.upgrade()
+                        result = selectedTurret.upgrade(playerStats)
+                        if result == False:  # Insufficient funds
+                            insufficientFundsTime = pygame.time.get_ticks()
                 else:
                     selectedTurret = None
                     clearSelection()
 
-                    # If click was not on a button  
+                    # When player tries to place a turret, createTurret is called with playerStats
+                    # If placement fails due to insufficient funds, trigger the insufficient funds message
                     if not buttonClicked and selectedTurretType is not None:
-                        createTurret(selectedTurretType)
+                        result = createTurret(selectedTurretType, playerStats, screen)
+                        if result == False:  # Insufficient funds
+                            insufficientFundsTime = pygame.time.get_ticks()
                     else:
                         selectedTurret = selectTurret(mousePos)
         
@@ -372,4 +426,4 @@ def gameLoop():
         
         pygame.display.update()
 
-#gameLoop()
+gameLoop()
