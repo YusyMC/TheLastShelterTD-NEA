@@ -63,7 +63,7 @@ class Enemy(pygame.sprite.Sprite): # Inheritance, all functionalities of sprite 
         if self.targetWaypoint >= len(self.waypoints):
             # Damage shelter when enemy reaches the end
             self.playerStats.loseHealth(ENEMY_DATA.get(self.enemyType)["damage"])
-            self.health = 0
+            self.kill()
             return # Stops moving
         
         # Converts next waypoint into a vector
