@@ -169,7 +169,7 @@ def gameLoop():
 
     # wave tracking
     currentWave = 0
-    waveSpawned = False
+    waveStarted = False # Tracks if current wave has been started by player
     waveEnemiesSpawned = 0
 
 
@@ -277,6 +277,15 @@ def gameLoop():
         hoverColour="#429724" # Colour of the button text when hovered with cursor
     )
 
+    beginRoundButton = Button(
+        image=pygame.image.load("assets/menu/mainMenuButton.png"),
+        xPos=1430, yPos=600,
+        textInput="BEGIN",
+        font=assets.getFont(50),
+        baseColour="#ffffff",
+        hoverColour="#429724"
+    )
+
     while True:
 
         timeDiff = clock.tick(60) / 1000.0 # seconds since last frame
@@ -291,9 +300,10 @@ def gameLoop():
                 enemiesToSpawn = spawnWave(currentWave)
                 spawnTimer = 0  # Reset spawn timer
                 currentWave += 1  # Increment wave counter for display
+                waveStarted = False # Wait for player to click begin before wave starts
 
         # Timed enemy spawning - spawns enemies at intervals instead of all at once
-        if enemiesToSpawn:
+        if enemiesToSpawn and waveStarted:
             # Accumulate time since last enemy spawn
             spawnTimer += timeDiff
             # Check if enough time has passed to spawn another enemy
@@ -372,6 +382,10 @@ def gameLoop():
                 upgradeCostTextRect = upgradeCostText.get_rect(center=(1430, 545))
                 screen.blit(upgradeCostText, upgradeCostTextRect)
                 upgradeButton.update(screen)
+        
+        # Only display begin button when wave is queued but not started
+        if len(enemiesToSpawn) > 0 and not waveStarted:
+            beginRoundButton.update(screen)
 
         # Event Handler
         for event in pygame.event.get():
@@ -408,6 +422,8 @@ def gameLoop():
                         result = selectedTurret.upgrade(playerStats)
                         if result == False:  # Insufficient funds
                             insufficientFundsTime = pygame.time.get_ticks()
+                elif beginRoundButton.checkForInput(mousePos) and len(enemiesToSpawn) > 0 and not waveStarted:
+                    waveStarted = True
                 else:
                     selectedTurret = None
                     clearSelection()
@@ -426,4 +442,4 @@ def gameLoop():
         
         pygame.display.update()
 
-gameLoop()
+#gameLoop()
