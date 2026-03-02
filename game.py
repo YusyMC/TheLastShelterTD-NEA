@@ -158,6 +158,64 @@ def spawnWave(waveNumber):
     # Return the complete queue of enemies to spawn
     return enemiesToSpawn
 
+# Draws Pause UI
+def pauseState(screen, isPaused):
+    # If game is not paused it should do nothing
+    if not isPaused:
+        return isPaused, None, None, None
+    
+    # What should be displayed when pause is activem, Pause UI elements
+    pauseBackgroundRect = assets.pauseBackground.get_rect(center=(790,360))
+    pauseText = assets.getFont(50).render("Pause", True, "#ffffff")
+    pauseTextRect = pauseText.get_rect(center=(790, 210))
+    logoRect1 = assets.logo.get_rect(center=(590, 210))
+    resumeHintText = assets.getFont(30).render("Press ESC to Resume", True, "#ffffff")
+    resumeHintRect = resumeHintText.get_rect(center=(790, 240))
+    greyedScreen = pygame.Surface((1580, 720), pygame.SRCALPHA)
+    greyedScreen.fill((50, 50, 50, 180))
+
+    # calling buttons within pause UI
+    resumeButton = Button(
+        image=pygame.image.load("assets/menu/mainMenuButton.png"),
+        xPos=790, yPos=290,
+        textInput="Resume",
+        font=assets.getFont(40),
+        baseColour="#ffffff",
+        hoverColour="#429724"
+    )
+    
+    restartButton = Button(
+        image=pygame.image.load("assets/menu/mainMenuButton.png"),
+        xPos=790, yPos=390,
+        textInput="Restart",
+        font=assets.getFont(40),
+        baseColour="#ffffff",
+        hoverColour="#429724"
+    )
+    
+    exitButton = Button(
+        image=pygame.image.load("assets/menu/mainMenuButton.png"),
+        xPos=790, yPos=490,
+        textInput="Exit To Main Menu",
+        font=assets.getFont(30),
+        baseColour="#ffffff",
+        hoverColour="#429724"
+    )
+
+    # Draw UI elements
+    screen.blit(greyedScreen, (0, 0))
+    screen.blit(assets.pauseBackground, pauseBackgroundRect)
+    screen.blit(pauseText, pauseTextRect)
+    screen.blit(assets.logo, logoRect1)
+    screen.blit(resumeHintText, resumeHintRect)
+    resumeButton.update(screen)
+    restartButton.update(screen)
+    exitButton.update(screen)
+    
+    # Return buttons and controlled variable
+    return isPaused, resumeButton, restartButton, exitButton
+        
+
 # Main game loop function
 def gameLoop():
     
@@ -252,6 +310,9 @@ def gameLoop():
     insufficientFundsTime = 0
     # how long message stays visible (2000ms = 2 seconds)
     INSUFFICIENT_FUNDS_DURATION = 2000  # milliseconds
+
+    # Control variable for pause system
+    isPaused = False
     
     # Creates a list to store all shop button objects
     shopButtons = [
@@ -285,6 +346,9 @@ def gameLoop():
         baseColour="#ffffff",
         hoverColour="#429724"
     )
+    
+    shouldRestart = False
+    shouldExit = False
 
     while True:
 
@@ -340,13 +404,21 @@ def gameLoop():
         screen.blit(assets.currencyIcon, currencyIconRect)
         screen.blit(moneyText, moneyTextRect)
         screen.blit(healthText, healthTextRect)
-        
         # Displayes the fully unblurred image leaving in a state ready for gameplay
         screen.blit(frames[-1], (0,0))
+        pauseResult = pauseState(screen, isPaused)
+        if isinstance(pauseResult, tuple):
+            isPaused, resumeButton, restartButton, exitButton = pauseResult
+        else:
+            isPaused = pauseResult
+            resumeButton = None
+            restartButton = None
+            exitButton = None
 
-        # Update group for every sprite in it
-        assets.enemyGroup.update(timeDiff)
-        assets.turretGroup.update(assets.enemyGroup)
+        if not isPaused:
+            # Update group for every sprite in it
+            assets.enemyGroup.update(timeDiff)
+            assets.turretGroup.update(assets.enemyGroup)
 
         # highlight the selected turrent
         if selectedTurret:  
@@ -392,8 +464,26 @@ def gameLoop():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            # Handles pause if ESC or P is clicked
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE or event.key == pygame.K_p:
+                    isPaused = not isPaused  # Toggle pause
             # Checks if Left Mouse Click 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                # Handle pause menu buttons when paused
+                if isPaused:
+                    if resumeButton and resumeButton.checkForInput(mousePos):
+                        isPaused = False
+                        continue
+                    elif restartButton and restartButton.checkForInput(mousePos):
+                        shouldRestart = True
+                        continue
+                    elif exitButton and exitButton.checkForInput(mousePos):
+                        shouldExit = True
+                        continue
+                    # Don't allow other clicks while paused
+                    continue
+
                 # Tracks if a shop button is clicked
                 buttonClicked = False
                 
@@ -436,6 +526,16 @@ def gameLoop():
                             insufficientFundsTime = pygame.time.get_ticks()
                     else:
                         selectedTurret = selectTurret(mousePos)
+        
+        # Check for restart or exit
+        if shouldRestart:
+            gameLoop()  # Restart the game
+            return
+        
+        if shouldExit:
+            from main import mainMenu
+            mainMenu()
+            return # Exit to main menu
         
         #update display
         pygame.display.flip()

@@ -17,6 +17,8 @@ menuBG = pygame.image.fromstring(data, size, mode)
 
 menuBG = pygame.transform.scale(menuBG, (1280,720)) # sets menu background to 1280x720 to fit screen
 
+pauseBackground = pygame.image.load("assets/pauseBackground.png")
+
 
 # Button backboard
 
