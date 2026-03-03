@@ -28,10 +28,10 @@ ENEMY_DATA = {
 ENEMY_WAVE_DATA = [
     {
         # Wave 1
-        "walker": 1,
-        "runner": 1,
-        "armoured": 1,
-        "boss": 1
+        "walker": 5,
+        "runner": 0,
+        "armoured": 0,
+        "boss": 0
     },
     {
         # Wave 2
