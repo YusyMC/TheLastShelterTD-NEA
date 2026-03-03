@@ -225,6 +225,10 @@ def gameLoop():
     screen.blit(assets.menuBG, (0,0))
     pygame.display.update()
 
+    # reset groups if game loop is restarted
+    assets.enemyGroup.empty()
+    assets.turretGroup.empty()
+
     # wave tracking
     currentWave = 0
     waveStarted = False # Tracks if current wave has been started by player
@@ -406,14 +410,6 @@ def gameLoop():
         screen.blit(healthText, healthTextRect)
         # Displayes the fully unblurred image leaving in a state ready for gameplay
         screen.blit(frames[-1], (0,0))
-        pauseResult = pauseState(screen, isPaused)
-        if isinstance(pauseResult, tuple):
-            isPaused, resumeButton, restartButton, exitButton = pauseResult
-        else:
-            isPaused = pauseResult
-            resumeButton = None
-            restartButton = None
-            exitButton = None
 
         if not isPaused:
             # Update group for every sprite in it
@@ -428,6 +424,15 @@ def gameLoop():
         assets.enemyGroup.draw(screen)
         for turret in assets.turretGroup:
             turret.draw(screen)
+
+        pauseResult = pauseState(screen, isPaused)
+        if isinstance(pauseResult, tuple):
+            isPaused, resumeButton, restartButton, exitButton = pauseResult
+        else:
+            isPaused = pauseResult
+            resumeButton = None
+            restartButton = None
+            exitButton = None
 
         # Draws the shop buttons
         for button in shopButtons:
