@@ -214,7 +214,58 @@ def pauseState(screen, isPaused):
     
     # Return buttons and controlled variable
     return isPaused, resumeButton, restartButton, exitButton
-        
+
+def gameOver(screen, gameOverStatus):
+    
+    # sets loss game over logic
+    if gameOverStatus:
+            gameOverText = assets.getFont(50).render("GAME OVER!", True, "#ffffff")
+            subText = assets.getFont(30).render("You Lose!", True, "#f93030")
+    # sets win game over logic
+    if not gameOverStatus:
+            gameOverText = assets.getFont(50).render("Congradulations!", True, "#ffffff")
+            subText = assets.getFont(30).render("You win!", True, "#98ff76")
+
+    # What should be displayed when pause is activem, Pause UI elements
+    pauseBackgroundRect = assets.pauseBackground.get_rect(center=(790,360))
+    gameOverTextRect = gameOverText.get_rect(center=(790, 210))
+    logoRect1 = assets.logo.get_rect(center=(590, 210))
+    subTextRect = subText.get_rect(center=(790, 240))
+    greyedScreen = pygame.Surface((1580, 720), pygame.SRCALPHA)
+    greyedScreen.fill((50, 50, 50, 180))
+
+    # calling buttons within game over UI
+    
+    restartButton = Button(
+        image=pygame.image.load("assets/menu/mainMenuButton.png"),
+        xPos=790, yPos=390,
+        textInput="Restart",
+        font=assets.getFont(40),
+        baseColour="#ffffff",
+        hoverColour="#429724"
+    )
+    
+    exitButton = Button(
+        image=pygame.image.load("assets/menu/mainMenuButton.png"),
+        xPos=790, yPos=490,
+        textInput="Exit To Main Menu",
+        font=assets.getFont(30),
+        baseColour="#ffffff",
+        hoverColour="#429724"
+    )
+
+    # Draw UI elements
+    screen.blit(greyedScreen, (0, 0))
+    screen.blit(assets.pauseBackground, pauseBackgroundRect)
+    screen.blit(gameOverText, gameOverTextRect)
+    screen.blit(assets.logo, logoRect1)
+    screen.blit(subText, subTextRect)
+    restartButton.update(screen)
+    exitButton.update(screen)
+    
+    # Return buttons and controlled variable
+    return restartButton, exitButton
+
 
 # Main game loop function
 def gameLoop():
@@ -317,6 +368,9 @@ def gameLoop():
 
     # Control variable for pause system
     isPaused = False
+    gameOverPause = False
+    # Status for how the game has ended
+    gameOverStatus = None  # True = lose, False = win
     
     # Creates a list to store all shop button objects
     shopButtons = [
@@ -370,6 +424,16 @@ def gameLoop():
                 currentWave += 1  # Increment wave counter for display
                 waveStarted = False # Wait for player to click begin before wave starts
 
+        # Check win condition - all waves completed and no enemies remaining
+        if currentWave >= len(ENEMY_WAVE_DATA) and len(assets.enemyGroup) == 0 and len(enemiesToSpawn) == 0:
+            gameOverPause = True
+            gameOverStatus = False  # False = player wins
+        
+        # Check lose condition - shelter health reaches 0
+        if playerStats.shelterHealth <= 0:
+            gameOverPause = True
+            gameOverStatus = True  # True = player loses
+
         # Timed enemy spawning - spawns enemies at intervals instead of all at once
         if enemiesToSpawn and waveStarted:
             # Accumulate time since last enemy spawn
@@ -411,7 +475,7 @@ def gameLoop():
         # Displayes the fully unblurred image leaving in a state ready for gameplay
         screen.blit(frames[-1], (0,0))
 
-        if not isPaused:
+        if not isPaused and not gameOverPause:
             # Update group for every sprite in it
             assets.enemyGroup.update(timeDiff)
             assets.turretGroup.update(assets.enemyGroup)
@@ -433,6 +497,10 @@ def gameLoop():
             resumeButton = None
             restartButton = None
             exitButton = None
+
+        # Handle game over state
+        if gameOverPause:
+            restartButton, exitButton = gameOver(screen, gameOverStatus)
 
         # Draws the shop buttons
         for button in shopButtons:
@@ -475,6 +543,17 @@ def gameLoop():
                     isPaused = not isPaused  # Toggle pause
             # Checks if Left Mouse Click 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                # Handle game over menu buttons when game is over
+                if gameOverPause:
+                    if restartButton and restartButton.checkForInput(mousePos):
+                        shouldRestart = True
+                        continue
+                    elif exitButton and exitButton.checkForInput(mousePos):
+                        shouldExit = True
+                        continue
+                    # Don't allow other clicks while game over
+                    continue
+                
                 # Handle pause menu buttons when paused
                 if isPaused:
                     if resumeButton and resumeButton.checkForInput(mousePos):
