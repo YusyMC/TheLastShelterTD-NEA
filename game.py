@@ -215,22 +215,27 @@ def pauseState(screen, isPaused):
     # Return buttons and controlled variable
     return isPaused, resumeButton, restartButton, exitButton
 
-def gameOver(screen, gameOverStatus):
+def gameOver(screen, gameOverStatus, completionTime=None):
     
     # sets loss game over logic
     if gameOverStatus:
             gameOverText = assets.getFont(50).render("GAME OVER!", True, "#ffffff")
             subText = assets.getFont(30).render("You Lose!", True, "#f93030")
+            timeText = None
     # sets win game over logic
     if not gameOverStatus:
             gameOverText = assets.getFont(50).render("Congradulations!", True, "#ffffff")
             subText = assets.getFont(30).render("You win!", True, "#98ff76")
+            minutes = int(completionTime // 60)
+            seconds = int(completionTime % 60)
+            timeText = assets.getFont(30).render(f"Time: {minutes}:{seconds:02d}", True, "#ffff00")
 
     # What should be displayed when pause is activem, Pause UI elements
     pauseBackgroundRect = assets.pauseBackground.get_rect(center=(790,360))
     gameOverTextRect = gameOverText.get_rect(center=(790, 210))
     logoRect1 = assets.logo.get_rect(center=(590, 210))
     subTextRect = subText.get_rect(center=(790, 240))
+    timeTextRect = timeText.get_rect(center=(790, 280))
     greyedScreen = pygame.Surface((1580, 720), pygame.SRCALPHA)
     greyedScreen.fill((50, 50, 50, 180))
 
@@ -260,6 +265,7 @@ def gameOver(screen, gameOverStatus):
     screen.blit(gameOverText, gameOverTextRect)
     screen.blit(assets.logo, logoRect1)
     screen.blit(subText, subTextRect)
+    screen.blit(timeText, timeTextRect)
     restartButton.update(screen)
     exitButton.update(screen)
     
@@ -360,6 +366,9 @@ def gameLoop():
 
     # This creates a single PlayerStats object that tracks money, health, and score throughout the game
     playerStats = PlayerStats()
+
+    # initialises elapsed time counter
+    elapsedTime = 0
     
     # Add timer variables for displaying insufficient funds message
     insufficientFundsTime = 0
@@ -411,6 +420,10 @@ def gameLoop():
     while True:
 
         timeDiff = clock.tick(60) / 1000.0 # seconds since last frame
+        # time accumulates when both is paused and game over paused is False
+        if not isPaused and not gameOverPause:
+            # adds the time difference each time to create the elapsed time
+            elapsedTime += timeDiff
         mousePos = pygame.mouse.get_pos()
 
 
@@ -428,6 +441,8 @@ def gameLoop():
         if currentWave >= len(ENEMY_WAVE_DATA) and len(assets.enemyGroup) == 0 and len(enemiesToSpawn) == 0:
             gameOverPause = True
             gameOverStatus = False  # False = player wins
+            # Stores elapsed time
+            completionTime = elapsedTime
         
         # Check lose condition - shelter health reaches 0
         if playerStats.shelterHealth <= 0:
@@ -500,7 +515,8 @@ def gameLoop():
 
         # Handle game over state
         if gameOverPause:
-            restartButton, exitButton = gameOver(screen, gameOverStatus)
+            # Only displays completion time if game has been won
+            restartButton, exitButton = gameOver(screen, gameOverStatus, completionTime if gameOverStatus == False else None)
 
         # Draws the shop buttons
         for button in shopButtons:
