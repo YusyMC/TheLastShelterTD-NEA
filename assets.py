@@ -53,6 +53,16 @@ bossZombie = pygame.image.load("assets/objects/enemies/boss_zombie.png")
 basicTurret = pygame.image.load("assets/objects/defences/basic_turret.png")
 sniperTurret = pygame.image.load("assets/objects/defences/sniper_turret.png")
 
+# SOUND LOADING
+
+purchaseSound = pygame.mixer.Sound("assets/sounds/placeTurret.mp3")
+purchaseDenySound = pygame.mixer.Sound("assets/sounds/purchaseDenied.mp3")
+playerDamage = pygame.mixer.Sound("assets/sounds/playerDamage.mp3")
+shootNoise = pygame.mixer.Sound("assets/sounds/shootNoise.mp3")
+gameOverSound = pygame.mixer.Sound("assets/sounds/gameOver.mp3")
+victorySound = pygame.mixer.Sound("assets/sounds/victory.mp3")
+buttonClickSound = pygame.mixer.Sound("assets/sounds/buttonClick.mp3")
+
 # Function to get the custom game font at different sizes
 def getFont(size):
     return pygame.font.Font("assets/fonts/gameFont.otf", size)

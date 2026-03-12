@@ -10,6 +10,7 @@ from playerStats import PlayerStats
 from turret_data import BASIC_TURRET_DATA, SNIPER_TURRET_DATA
 
 pygame.init()
+pygame.mixer.init()
 
 # Loading map.tmj into code
 with open("levels/map.tmj") as file:
@@ -235,7 +236,7 @@ def gameOver(screen, gameOverStatus, completionTime=None):
     gameOverTextRect = gameOverText.get_rect(center=(790, 210))
     logoRect1 = assets.logo.get_rect(center=(590, 210))
     subTextRect = subText.get_rect(center=(790, 240))
-    timeTextRect = timeText.get_rect(center=(790, 280))
+    timeTextRect = timeText.get_rect(center=(790, 280)) if timeText else None
     greyedScreen = pygame.Surface((1580, 720), pygame.SRCALPHA)
     greyedScreen.fill((50, 50, 50, 180))
 
@@ -265,7 +266,8 @@ def gameOver(screen, gameOverStatus, completionTime=None):
     screen.blit(gameOverText, gameOverTextRect)
     screen.blit(assets.logo, logoRect1)
     screen.blit(subText, subTextRect)
-    screen.blit(timeText, timeTextRect)
+    if timeText:
+        screen.blit(timeText, timeTextRect)
     restartButton.update(screen)
     exitButton.update(screen)
     
@@ -443,11 +445,16 @@ def gameLoop():
             gameOverStatus = False  # False = player wins
             # Stores elapsed time
             completionTime = elapsedTime
+            # Plays the victory sound
+            assets.victorySound.play()
         
         # Check lose condition - shelter health reaches 0
         if playerStats.shelterHealth <= 0:
-            gameOverPause = True
-            gameOverStatus = True  # True = player loses
+            if not gameOverPause:  # Only set once
+                gameOverPause = True
+                gameOverStatus = True  # True = player loses
+                # Plays the game over sound
+                assets.gameOverSound.play()
 
         # Timed enemy spawning - spawns enemies at intervals instead of all at once
         if enemiesToSpawn and waveStarted:
@@ -562,9 +569,11 @@ def gameLoop():
                 # Handle game over menu buttons when game is over
                 if gameOverPause:
                     if restartButton and restartButton.checkForInput(mousePos):
+                        assets.buttonClickSound.play()
                         shouldRestart = True
                         continue
                     elif exitButton and exitButton.checkForInput(mousePos):
+                        assets.buttonClickSound.play()
                         shouldExit = True
                         continue
                     # Don't allow other clicks while game over
@@ -573,12 +582,15 @@ def gameLoop():
                 # Handle pause menu buttons when paused
                 if isPaused:
                     if resumeButton and resumeButton.checkForInput(mousePos):
+                        assets.buttonClickSound.play()
                         isPaused = False
                         continue
                     elif restartButton and restartButton.checkForInput(mousePos):
+                        assets.buttonClickSound.play()
                         shouldRestart = True
                         continue
                     elif exitButton and exitButton.checkForInput(mousePos):
+                        assets.buttonClickSound.play()
                         shouldExit = True
                         continue
                     # Don't allow other clicks while paused
@@ -609,10 +621,13 @@ def gameLoop():
                 
                 # When upgrade button is clicked, the turret's upgrade() method is called with playerStats
                 if selectedTurret and selectedTurret.upgradeLevel < 4 and upgradeButton.checkForInput(mousePos):
+                        assets.buttonClickSound.play()
                         result = selectedTurret.upgrade(playerStats)
                         if result == False:  # Insufficient funds
                             insufficientFundsTime = pygame.time.get_ticks()
+                            assets.purchaseDenySound.play()
                 elif beginRoundButton.checkForInput(mousePos) and len(enemiesToSpawn) > 0 and not waveStarted:
+                    assets.buttonClickSound.play()
                     waveStarted = True
                 else:
                     selectedTurret = None
@@ -624,6 +639,7 @@ def gameLoop():
                         result = createTurret(selectedTurretType, playerStats, screen)
                         if result == False:  # Insufficient funds
                             insufficientFundsTime = pygame.time.get_ticks()
+                            assets.purchaseDenySound.play()
                     else:
                         selectedTurret = selectTurret(mousePos)
         

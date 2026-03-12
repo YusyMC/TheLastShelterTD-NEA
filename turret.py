@@ -1,6 +1,9 @@
 import pygame, math
 import assets
 from turret_data import BASIC_TURRET_DATA, SNIPER_TURRET_DATA
+
+pygame.mixer.init()
+
 # Creates Turret class and inherits from pygames sprite class
 class Turret(pygame.sprite.Sprite):
     def __init__(self, spriteSheet, tileX, tileY):
@@ -103,6 +106,8 @@ class Turret(pygame.sprite.Sprite):
                     self.angle = math.degrees(math.atan2(-yDistance, xDistance))
                     # Damage enemy
                     self.target.health -= self.damage
+                    # Play shoot noise
+                    assets.shootNoise.play()
     
     def playAnimation(self):
         # Updates image

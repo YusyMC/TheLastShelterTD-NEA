@@ -7,6 +7,7 @@ from assets import loadImage
 
 # Initialise's Pygame
 pygame.init()
+pygame.mixer.init()
 
 # Game window
 screen = pygame.display.set_mode((1280, 720))
@@ -84,11 +85,15 @@ def mainMenu():
             # If the mouse is clicked
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if playBUTTON.checkForInput(menuMousePos):
-                    return game.gameLoop() #placeholder TODO: play functions
+                    # plays click sound when clicked
+                    assets.buttonClickSound.play()
+                    return game.gameLoop() 
                 if optionsBUTTON.checkForInput(menuMousePos):
+                    assets.buttonClickSound.play()
                     return print(0) #placeholder TODO: option function
                 # If Exit button clicked, game closes
                 if quitBUTTON.checkForInput(menuMousePos):
+                    assets.buttonClickSound.play()
                     pygame.quit()
                     sys.exit()
         

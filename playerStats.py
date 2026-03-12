@@ -1,3 +1,8 @@
+import pygame
+import assets
+
+pygame.mixer.init()
+
 class PlayerStats():
 
     def __init__(self):
@@ -13,11 +18,13 @@ class PlayerStats():
     def loseMoney(self, amount):
         # Called when player places turret or upgrades turret to deduct cost
         self.money -= amount
+        assets.purchaseSound.play()
     
     def loseHealth(self, amount):
 
         # Health is capped at 0 to prevent negative values
         self.shelterHealth -= amount
+        assets.playerDamage.play()
         if self.shelterHealth < 0:
             self.shelterHealth = 0
     
