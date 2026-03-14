@@ -13,6 +13,54 @@ pygame.mixer.init()
 screen = pygame.display.set_mode((1280, 720))
 pygame.display.set_caption("The Last Shelter TD")
 
+# settings ui
+def settingsUI():
+    while True:
+
+        # updates screen to new display
+        pygame.display.update()
+        # Fills screen with grey screen
+        screen.fill((128, 128, 128))
+
+        # Gets mouse position
+        mousePos = pygame.mouse.get_pos()
+
+        # Creating a button for the player to go back
+        backButton = Button(
+            image=pygame.image.load("assets/menu/mainMenuButton.png"),
+            xPos=640, yPos=450,
+            textInput="Back",
+            font=assets.getFont(40),
+            baseColour="#ffffff",
+            hoverColour="#429724"
+        )
+
+        # Text to display that this feature will is coming soon
+        settingsText = assets.getFont(40).render("COMING SOON!", True, "#ffffff")
+        settingsTextRect = settingsText.get_rect(center=(640, 360))
+
+        # Display text
+        screen.blit(settingsText, settingsTextRect)
+
+        # display button
+        backButton.changeColour(mousePos)
+        backButton.update(screen)
+
+        # Event handler
+        for event in pygame.event.get():
+            # If user presses cross
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            # When user presses back button
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                # Checks if the button is pressed
+                if backButton.checkForInput(mousePos):
+                    # Plays click sound
+                    assets.buttonClickSound.play()
+                    # Display main menu again
+                    return mainMenu()
+
 # main menu screen function
 def mainMenu():
     # Infinite loop to keep the main menu running
@@ -90,10 +138,13 @@ def mainMenu():
                     return game.gameLoop() 
                 if optionsBUTTON.checkForInput(menuMousePos):
                     assets.buttonClickSound.play()
-                    return print(0) #placeholder TODO: option function
+                    # go to settings screen
+                    return settingsUI()
                 # If Exit button clicked, game closes
                 if quitBUTTON.checkForInput(menuMousePos):
                     assets.buttonClickSound.play()
+                    pygame.time.delay(500)  # Allow sound to play before quitting
+                    #Quit Game
                     pygame.quit()
                     sys.exit()
         
