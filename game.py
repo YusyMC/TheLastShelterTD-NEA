@@ -382,6 +382,8 @@ def gameLoop():
     gameOverPause = False
     # Status for how the game has ended
     gameOverStatus = None  # True = lose, False = win
+    # Controls the victory sound
+    victory = False
     
     # Creates a list to store all shop button objects
     shopButtons = [
@@ -445,8 +447,10 @@ def gameLoop():
             gameOverStatus = False  # False = player wins
             # Stores elapsed time
             completionTime = elapsedTime
-            # Plays the victory sound
-            assets.victorySound.play()
+            if not victory:
+                # Plays the victory sound
+                assets.victorySound.play()
+                victory = True
         
         # Check lose condition - shelter health reaches 0
         if playerStats.shelterHealth <= 0:
@@ -621,7 +625,6 @@ def gameLoop():
                 
                 # When upgrade button is clicked, the turret's upgrade() method is called with playerStats
                 if selectedTurret and selectedTurret.upgradeLevel < 4 and upgradeButton.checkForInput(mousePos):
-                        assets.buttonClickSound.play()
                         result = selectedTurret.upgrade(playerStats)
                         if result == False:  # Insufficient funds
                             insufficientFundsTime = pygame.time.get_ticks()
