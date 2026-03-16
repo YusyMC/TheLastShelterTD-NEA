@@ -1,27 +1,27 @@
 ENEMY_DATA = {
     "walker": {
-        "health": 10,
+        "health": 20,
         "speed": 30,
+        "damage": 5,
+        "currency": 10
+    },
+    "runner": {
+        "health": 20,
+        "speed": 60,
         "damage": 5,
         "currency": 25
     },
-    "runner": {
-        "health": 10,
-        "speed": 60,
-        "damage": 5,
+    "armoured": {
+        "health": 100,
+        "speed": 25,
+        "damage": 20,
         "currency": 50
     },
-    "armoured": {
-        "health": 50,
-        "speed": 15,
-        "damage": 20,
-        "currency": 100
-    },
     "boss": {
-        "health": 100,
+        "health": 200,
         "speed": 30,
         "damage": 100,
-        "currency": 500
+        "currency": 100
     }
 }
 
@@ -91,7 +91,7 @@ ENEMY_WAVE_DATA = [
     },
     {
         # Wave 10
-        "walker": 5,
+        "walker": 5, 
         "runner": 5,
         "armoured": 5,
         "boss": 1

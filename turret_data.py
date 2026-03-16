@@ -34,28 +34,28 @@ SNIPER_TURRET_DATA = [
         # Level 1
         "range": 200,
         "cooldown": 2500,
-        "damage": 15,
+        "damage": 5,
         "upgradeToNextLevelCost": 25,
     },
     {
         # Level 2
         "range": 250,
         "cooldown": 2350,
-        "damage": 20,
+        "damage": 5,
         "upgradeToNextLevelCost": 75,
     },
     {
         # Level 3
         "range": 275,
         "cooldown": 2100,
-        "damage": 20,
+        "damage": 10,
         "upgradeToNextLevelCost": 100,
     },
     {
         # Level 4
         "range": 300,
         "cooldown": 2000,
-        "damage": 25,
+        "damage": 20,
         "upgradeToNextLevelCost": 0,
     }
 ]

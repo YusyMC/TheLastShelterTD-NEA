@@ -7,7 +7,7 @@ class PlayerStats():
 
     def __init__(self):
         self.shelterHealth = 100
-        self.money = 150
+        self.money = 100
         self.score = 0
     
     
